@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ODR Platform — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0F172A;
+  --navy-2:#1E293B;
+  --navy-3:#334155;
+  --gold:#D4AF37;
+  --gold-soft:#E8CC6B;
+  --gold-deep:#B8941F;
+  --bg:#F1F4F9;
+  --surface:#FFFFFF;
+  --line:#E2E8F0;
+  --line-soft:#EEF2F7;
+  --text:#0F172A;
+  --muted:#64748B;
+  --muted-2:#94A3B8;
+  --emerald:#059669;
+  --emerald-soft:#D1FAE5;
+  --amber:#D97706;
+  --amber-soft:#FEF3C7;
+  --blue:#2563EB;
+  --blue-soft:#DBEAFE;
+  --red:#DC2626;
+  --red-soft:#FEE2E2;
+  --shadow:0 1px 3px rgba(15,23,42,.06),0 10px 30px -12px rgba(15,23,42,.12);
+  --shadow-lg:0 20px 60px -20px rgba(15,23,42,.35);
+  --radius:16px;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --serif:'Fraunces',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.5;
+  overflow:hidden;
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* ====== APP SHELL ====== */
+#app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* Top demo chrome bar */
+.chrome{
+  height:52px;flex-shrink:0;
+  background:var(--navy);
+  display:flex;align-items:center;gap:16px;
+  padding:0 18px;color:#fff;z-index:200;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.chrome .brand{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:.2px;font-size:15px}
+.chrome .brand .mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-deep));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--navy);font-family:var(--serif);font-weight:700;font-size:17px;
+}
+.chrome .brand small{font-weight:500;color:var(--gold-soft);font-size:11px;letter-spacing:.5px}
+.chrome .demo-tag{
+  font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  background:rgba(212,175,55,.15);color:var(--gold-soft);
+  padding:4px 10px;border-radius:99px;border:1px solid rgba(212,175,55,.3);
+}
+.chrome .spacer{flex:1}
+.chrome .crumbs{font-size:13px;color:#94A3B8;display:flex;align-items:center;gap:8px}
+.chrome .crumbs b{color:#fff;font-weight:600}
+.chrome .reset-btn{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+  color:#E2E8F0;font-family:var(--sans);font-size:12.5px;font-weight:600;
+  padding:7px 14px;border-radius:9px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px;
+}
+.chrome .reset-btn:hover{background:rgba(255,255,255,.14);color:#fff}
+
+/* Stage */
+#stage{flex:1;position:relative;overflow:hidden}
+.screen{
+  position:absolute;inset:0;overflow-y:auto;
+  opacity:0;visibility:hidden;transform:translateY(8px);
+  transition:opacity .35s ease,transform .35s ease;
+}
+.screen.active{opacity:1;visibility:visible;transform:none;z-index:1}
+
+/* ====== REUSABLE LAYOUT ====== */
+.portal{display:flex;min-height:100%;background:var(--bg)}
+.sidebar{
+  width:248px;flex-shrink:0;background:var(--navy);color:#CBD5E1;
+  display:flex;flex-direction:column;padding:0;position:sticky;top:0;height:100vh;
+}
+.sidebar .s-brand{
+  padding:20px 22px;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.sidebar .s-brand .mark{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-deep));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--navy);font-family:var(--serif);font-weight:700;font-size:18px;
+}
+.sidebar .s-brand .t{font-family:var(--sans);font-weight:800;color:#fff;font-size:14.5px;line-height:1.1}
+.sidebar .s-brand .t small{display:block;font-weight:500;font-size:9.5px;letter-spacing:1.5px;color:var(--gold-soft);margin-top:2px}
+.nav{padding:14px 12px;flex:1;overflow-y:auto}
+.nav-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#475569;padding:14px 12px 8px}
+.nav a{
+  display:flex;align-items:center;gap:11px;padding:9.5px 12px;border-radius:10px;
+  color:#94A3B8;text-decoration:none;font-size:13.5px;font-weight:500;cursor:pointer;transition:.15s;margin-bottom:2px;
+}
+.nav a svg{width:18px;height:18px;flex-shrink:0;stroke-width:2}
+.nav a:hover{background:rgba(255,255,255,.05);color:#E2E8F0}
+.nav a.on{background:linear-gradient(90deg,rgba(212,175,55,.16),rgba(212,175,55,.04));color:#fff}
+.nav a.on svg{color:var(--gold)}
+.nav a .badge{margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;font-weight:800;padding:1px 7px;border-radius:99px}
+.s-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.s-foot .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#475569,#1E293B);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;border:1.5px solid rgba(212,175,55,.4)}
+.s-foot .nm{font-size:12.5px;font-weight:600;color:#E2E8F0;line-height:1.2}
+.s-foot .nm small{display:block;color:#64748B;font-weight:500;font-size:10.5px}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{
+  height:64px;flex-shrink:0;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 28px;position:sticky;top:0;z-index:50;
+}
+.topbar h1{font-size:19px;font-weight:700;letter-spacing:-.3px}
+.topbar h1 small{display:block;font-size:12px;font-weight:500;color:var(--muted);letter-spacing:0}
+.topbar .spacer{flex:1}
+.searchbox{
+  display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:8px 13px;width:280px;color:var(--muted);font-size:13px;
+}
+.searchbox svg{width:16px;height:16px}
+.icon-btn{
+  width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--navy-3);position:relative;transition:.15s;
+}
+.icon-btn:hover{border-color:var(--gold);color:var(--navy)}
+.icon-btn svg{width:18px;height:18px}
+.icon-btn .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--surface)}
+.content{flex:1;padding:28px;overflow-y:auto}
+
+/* ====== UI PRIMITIVES ====== */
+.btn{
+  font-family:var(--sans);font-weight:600;font-size:13.5px;border:none;cursor:pointer;
+  padding:10px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:8px;transition:.15s;white-space:nowrap;text-decoration:none;
+}
+.btn svg{width:16px;height:16px}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:var(--navy);box-shadow:0 4px 14px -4px rgba(212,175,55,.5)}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 8px 20px -6px rgba(212,175,55,.6)}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-navy:hover{background:var(--navy-2)}
+.btn-ghost{background:var(--surface);color:var(--navy);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--navy-3);background:var(--bg)}
+.btn-sm{padding:7px 13px;font-size:12.5px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-pad{padding:22px}
+
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.chip .d{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.9}
+.chip-progress{background:var(--amber-soft);color:var(--amber)}
+.chip-scheduled{background:var(--blue-soft);color:var(--blue)}
+.chip-evidence{background:#EDE9FE;color:#7C3AED}
+.chip-pending{background:#F1F5F9;color:#64748B}
+.chip-closed{background:var(--emerald-soft);color:var(--emerald)}
+.chip-assigned{background:var(--emerald-soft);color:var(--emerald)}
+.chip-paid{background:var(--emerald-soft);color:var(--emerald)}
+.chip-live{background:var(--red-soft);color:var(--red)}
+
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted-2);padding:0 18px 12px;border-bottom:1px solid var(--line)}
+tbody td{padding:15px 18px;font-size:13.5px;border-bottom:1px solid var(--line-soft);color:var(--navy-2)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr{transition:.12s;cursor:pointer}
+tbody tr:hover{background:var(--bg)}
+td .cid{font-weight:700;color:var(--navy)}
+td .strong{font-weight:600;color:var(--navy)}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.kpi .ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.kpi .ic svg{width:21px;height:21px;stroke-width:2}
+.kpi .lbl{font-size:12.5px;color:var(--muted);font-weight:600}
+.kpi .val{font-size:28px;font-weight:800;letter-spacing:-.5px;margin-top:3px;font-family:var(--serif)}
+.kpi .trend{font-size:11.5px;font-weight:700;margin-top:7px;display:inline-flex;align-items:center;gap:3px}
+.kpi .trend.up{color:var(--emerald)}
+.kpi .trend.flat{color:var(--muted)}
+
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-head h2{font-size:16px;font-weight:700;letter-spacing:-.2px}
+.section-head h2 .sub,.muted{color:var(--muted);font-weight:500}
+.link-gold{color:var(--gold-deep);font-weight:700;font-size:12.5px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.link-gold:hover{color:var(--gold)}
+
+/* clickable hint pulse */
+.hot{position:relative}
+.hot::after{content:"";position:absolute;inset:-3px;border-radius:inherit;box-shadow:0 0 0 0 rgba(212,175,55,.5);animation:pulse 2.4s infinite;pointer-events:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(212,175,55,.45)}70%{box-shadow:0 0 0 9px rgba(212,175,55,0)}100%{box-shadow:0 0 0 0 rgba(212,175,55,0)}}
+
+/* Avatars */
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;flex-shrink:0}
+.av-c{background:linear-gradient(135deg,#3B82F6,#1D4ED8)}
+.av-r{background:linear-gradient(135deg,#F59E0B,#D97706)}
+.av-n{background:linear-gradient(135deg,#10B981,#059669)}
+.av-a{background:linear-gradient(135deg,#8B5CF6,#6D28D9)}
+.person{display:flex;align-items:center;gap:10px}
+.person .meta b{font-size:13px;font-weight:600;display:block;color:var(--navy)}
+.person .meta small{font-size:11.5px;color:var(--muted)}
+
+/* progress steps */
+.steps{display:flex;align-items:center;margin-bottom:30px}
+.steps .st{display:flex;flex-direction:column;align-items:center;gap:7px;flex-shrink:0;width:84px;text-align:center}
+.steps .num{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:var(--bg);color:var(--muted-2);border:2px solid var(--line);transition:.2s}
+.steps .st.done .num{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.steps .st.cur .num{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 0 0 4px rgba(15,23,42,.1)}
+.steps .lbl{font-size:11.5px;font-weight:600;color:var(--muted)}
+.steps .st.cur .lbl,.steps .st.done .lbl{color:var(--navy)}
+.steps .bar{flex:1;height:2px;background:var(--line);margin:0 -6px;margin-bottom:24px;position:relative;z-index:-0}
+.steps .bar.fill{background:var(--emerald)}
+
+.field{margin-bottom:18px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--navy-2);margin-bottom:7px}
+.field input,.field select,.field textarea{
+  width:100%;font-family:var(--sans);font-size:13.5px;padding:11px 14px;border:1px solid var(--line);
+  border-radius:10px;background:var(--surface);color:var(--navy);transition:.15s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.12)}
+.field textarea{resize:vertical;min-height:80px}
+
+/* donut/legend helpers */
+.legend{display:flex;flex-direction:column;gap:11px}
+.legend .lg{display:flex;align-items:center;gap:9px;font-size:13px}
+.legend .lg .sw{width:11px;height:11px;border-radius:3px}
+.legend .lg .v{margin-left:auto;font-weight:700;color:var(--navy)}
+
+/* timeline */
+.tl{position:relative;padding-left:28px}
+.tl::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl .ev{position:relative;padding-bottom:22px}
+.tl .ev:last-child{padding-bottom:0}
+.tl .ev .dot{position:absolute;left:-28px;top:1px;width:20px;height:20px;border-radius:50%;background:var(--surface);border:2px solid var(--line);display:flex;align-items:center;justify-content:center}
+.tl .ev.done .dot{background:var(--emerald);border-color:var(--emerald)}
+.tl .ev.done .dot svg{width:11px;height:11px;color:#fff;stroke-width:3}
+.tl .ev.cur .dot{background:var(--gold);border-color:var(--gold);animation:pulse 2s infinite}
+.tl .ev .ti{font-size:13.5px;font-weight:700;color:var(--navy)}
+.tl .ev .dt{font-size:11.5px;color:var(--muted-2);font-weight:600;margin-bottom:3px}
+.tl .ev .ds{font-size:12.5px;color:var(--muted)}
+
+/* doc rows */
+.doc-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:11px;margin-bottom:10px;transition:.15s;cursor:pointer}
+.doc-row:hover{border-color:var(--gold);background:#FFFEF8}
+.doc-row .fic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff}
+.fic.pdf{background:#DC2626}.fic.doc{background:#2563EB}.fic.zip{background:#7C3AED}.fic.img{background:#059669}
+.doc-row .nm{font-size:13px;font-weight:600;color:var(--navy)}
+.doc-row .sz{font-size:11px;color:var(--muted)}
+
+/* ====== HOMEPAGE (public marketing) ====== */
+.pub{min-height:100%;background:#fff}
+.pub-nav{height:72px;display:flex;align-items:center;gap:28px;padding:0 48px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);z-index:60}
+.pub-nav .lg{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px}
+.pub-nav .lg .mark{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:flex;align-items:center;justify-content:center;color:var(--navy);font-family:var(--serif);font-weight:700;font-size:19px}
+.pub-nav .lg small{display:block;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:var(--gold-deep);margin-top:1px}
+.pub-nav .links{display:flex;gap:26px;margin-left:18px}
+.pub-nav .links a{font-size:13.5px;font-weight:500;color:var(--navy-2);text-decoration:none;cursor:pointer}
+.pub-nav .links a:hover{color:var(--gold-deep)}
+.pub-nav .spacer{flex:1}
+.hero{padding:64px 48px 56px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;background:linear-gradient(180deg,#fff,#F8FAFC)}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--gold-deep);background:#FBF7E9;border:1px solid #F0E4B8;padding:6px 13px;border-radius:99px;margin-bottom:20px}
+.hero h1{font-family:var(--serif);font-size:54px;line-height:1.04;letter-spacing:-1.5px;font-weight:600;color:var(--navy)}
+.hero h1 em{font-style:italic;color:var(--gold-deep)}
+.hero p{font-size:16px;color:var(--muted);margin:20px 0 28px;max-width:480px;line-height:1.65}
+.hero .cta{display:flex;gap:14px}
+.hero .btn{padding:13px 24px;font-size:14.5px}
+.hero-art{position:relative;height:420px;border-radius:22px;overflow:hidden;background:linear-gradient(150deg,var(--navy),var(--navy-2));box-shadow:var(--shadow-lg);display:flex;align-items:center;justify-content:center}
+.hero-art .scales{font-size:150px;line-height:1;filter:drop-shadow(0 12px 30px rgba(0,0,0,.4))}
+.hero-art .glow{position:absolute;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.35),transparent 70%);top:-60px;right:-40px}
+.hero-art .glow2{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.25),transparent 70%);bottom:-50px;left:-30px}
+.hero-art .float-card{position:absolute;background:rgba(255,255,255,.97);border-radius:13px;padding:13px 16px;box-shadow:0 16px 40px -12px rgba(0,0,0,.4);display:flex;align-items:center;gap:11px}
+.hero-art .fc1{top:34px;left:-22px}
+.hero-art .fc2{bottom:40px;right:-18px}
+.hero-art .float-card .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.hero-art .float-card b{font-size:13px;font-weight:700;color:var(--navy);display:block}
+.hero-art .float-card small{font-size:11px;color:var(--muted)}
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--navy);padding:0;margin:0 48px;border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg);transform:translateY(-28px)}
+.stats-strip .st{padding:26px 28px;display:flex;align-items:center;gap:15px}
+.stats-strip .st .ic{font-size:26px}
+.stats-strip .st .v{font-family:var(--serif);font-size:28px;font-weight:700;color:#fff;line-height:1}
+.stats-strip .st .l{font-size:12px;color:var(--gold-soft);font-weight:600;margin-top:4px}
+.svc{padding:24px 48px 64px}
+.svc h2{font-family:var(--serif);font-size:34px;font-weight:600;letter-spacing:-.8px;text-align:center;color:var(--navy)}
+.svc .lead{text-align:center;color:var(--muted);font-size:15px;margin:12px auto 40px;max-width:560px}
+.svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.svc-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 22px;transition:.2s;cursor:default}
+.svc-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.svc-card .ic{width:52px;height:52px;border-radius:13px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px}
+.svc-card h3{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.svc-card p{font-size:13px;color:var(--muted);line-height:1.6}
+.works{background:linear-gradient(180deg,#F8FAFC,#fff);padding:64px 48px;border-top:1px solid var(--line)}
+.works h2{font-family:var(--serif);font-size:34px;font-weight:600;letter-spacing:-.8px;text-align:center;color:var(--navy);margin-bottom:44px}
+.works-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;position:relative}
+.work-step{text-align:center;position:relative}
+.work-step .n{width:64px;height:64px;border-radius:50%;background:#fff;border:2px solid var(--gold);color:var(--gold-deep);font-family:var(--serif);font-weight:700;font-size:26px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:var(--shadow)}
+.work-step h4{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:7px}
+.work-step p{font-size:12.5px;color:var(--muted);line-height:1.55;padding:0 8px}
+.pub-foot{background:var(--navy);color:#94A3B8;padding:40px 48px;display:flex;align-items:center;gap:14px;font-size:13px}
+.pub-foot .lg{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:15px}
+.pub-foot .lg .mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:flex;align-items:center;justify-content:center;color:var(--navy);font-family:var(--serif);font-weight:700}
+.pub-foot .spacer{flex:1}
+
+/* ====== LOGIN ====== */
+.login-wrap{min-height:100%;display:grid;grid-template-columns:1fr 1.1fr}
+.login-art{background:linear-gradient(160deg,var(--navy),var(--navy-2));color:#fff;display:flex;flex-direction:column;justify-content:center;padding:56px 60px;position:relative;overflow:hidden}
+.login-art .glow{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.22),transparent 70%);top:-80px;left:-80px}
+.login-art .mark{width:54px;height:54px;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:flex;align-items:center;justify-content:center;color:var(--navy);font-family:var(--serif);font-weight:700;font-size:28px;margin-bottom:30px;position:relative}
+.login-art h2{font-family:var(--serif);font-size:38px;font-weight:600;line-height:1.1;letter-spacing:-1px;position:relative}
+.login-art p{font-size:15px;color:#94A3B8;margin-top:16px;max-width:340px;line-height:1.6;position:relative}
+.login-art .pts{margin-top:32px;display:flex;flex-direction:column;gap:16px;position:relative}
+.login-art .pts .p{display:flex;align-items:center;gap:13px;font-size:14px;color:#CBD5E1}
+.login-art .pts .p .c{width:26px;height:26px;border-radius:50%;background:rgba(212,175,55,.18);display:flex;align-items:center;justify-content:center;color:var(--gold)}
+.login-art .pts .p .c svg{width:14px;height:14px;stroke-width:3}
+.login-form{display:flex;align-items:center;justify-content:center;padding:56px;background:#fff}
+.login-card{width:100%;max-width:380px}
+.login-card h3{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--navy);letter-spacing:-.5px}
+.login-card .sub{color:var(--muted);font-size:14px;margin:8px 0 26px}
+.login-tabs{display:flex;gap:6px;background:var(--bg);padding:5px;border-radius:11px;margin-bottom:24px}
+.login-tabs button{flex:1;padding:9px;border:none;background:transparent;font-family:var(--sans);font-weight:600;font-size:13px;color:var(--muted);border-radius:8px;cursor:pointer;transition:.15s}
+.login-tabs button.on{background:#fff;color:var(--navy);box-shadow:var(--shadow)}
+.login-card .row{display:flex;align-items:center;justify-content:space-between;margin:-4px 0 20px}
+.login-card .row label{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px}
+
+/* hearing room */
+.hr-wrap{min-height:100%;background:#0B1120;display:flex;flex-direction:column}
+.hr-top{height:56px;display:flex;align-items:center;gap:14px;padding:0 22px;color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
+.hr-top .cid{font-weight:700;font-size:14px}
+.hr-top .sub{font-size:12.5px;color:#94A3B8}
+.hr-top .rec{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:12.5px;color:#FCA5A5;font-weight:600}
+.hr-top .rec .d{width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse 1.5s infinite}
+.hr-top .tm{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px;color:#fff;background:rgba(255,255,255,.08);padding:5px 12px;border-radius:8px}
+.hr-body{flex:1;display:grid;grid-template-columns:1fr 320px;gap:0;overflow:hidden}
+.hr-stage{padding:20px;display:flex;flex-direction:column;gap:14px}
+.hr-vids{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px}
+.hr-vid{border-radius:14px;overflow:hidden;position:relative;background:linear-gradient(135deg,#1E293B,#0F172A);display:flex;align-items:center;justify-content:center}
+.hr-vid img{width:100%;height:100%;object-fit:cover}
+.hr-vid .label{position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);color:#fff;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:7px;display:flex;align-items:center;gap:6px}
+.hr-vid .role{font-size:9.5px;font-weight:700;color:var(--gold-soft);text-transform:uppercase;letter-spacing:.5px}
+.hr-vid .ph{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#475569,#334155);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:26px;color:#fff}
+.hr-vid.neutral{border:2px solid var(--gold)}
+.hr-ctrl{height:64px;background:rgba(255,255,255,.04);border-radius:14px;display:flex;align-items:center;justify-content:center;gap:14px}
+.hr-ctrl .cb{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.hr-ctrl .cb .b{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:#fff;transition:.15s}
+.hr-ctrl .cb .b svg{width:20px;height:20px}
+.hr-ctrl .cb:hover .b{background:rgba(255,255,255,.16)}
+.hr-ctrl .cb small{font-size:9.5px;color:#94A3B8}
+.hr-ctrl .cb.end .b{background:var(--red);width:auto;padding:0 22px;gap:8px;font-size:13px;font-weight:700}
+.hr-side{background:#0F172A;border-left:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column}
+.hr-side-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.08)}
+.hr-side-tabs button{flex:1;padding:14px;background:none;border:none;color:#94A3B8;font-family:var(--sans);font-weight:600;font-size:13px;cursor:pointer;border-bottom:2px solid transparent}
+.hr-side-tabs button.on{color:#fff;border-bottom-color:var(--gold)}
+.hr-chat{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:16px}
+.hr-msg .who{font-size:11.5px;font-weight:700;color:var(--gold-soft);margin-bottom:4px}
+.hr-msg .who small{color:#64748B;font-weight:500;margin-left:6px}
+.hr-msg .bub{background:rgba(255,255,255,.06);color:#E2E8F0;font-size:13px;padding:10px 13px;border-radius:12px;border-top-left-radius:3px;line-height:1.5}
+.hr-input{padding:14px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:9px}
+.hr-input input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 13px;color:#fff;font-family:var(--sans);font-size:13px}
+.hr-input input::placeholder{color:#64748B}
+.hr-input .snd{width:40px;height:40px;border-radius:10px;background:var(--gold);display:flex;align-items:center;justify-content:center;color:var(--navy);cursor:pointer;border:none}
+
+/* generic two-col */
+.grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:22px}
+.grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+
+/* bars chart */
+.bars{display:flex;align-items:flex-end;gap:14px;height:160px;padding-top:10px}
+.bars .bgrp{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end}
+.bars .bcol{width:100%;display:flex;gap:4px;align-items:flex-end;justify-content:center;height:100%}
+.bars .b{width:14px;border-radius:5px 5px 0 0;transition:.3s}
+.bars .bl{font-size:11px;color:var(--muted);font-weight:600}
+
+/* line chart wrapper */
+.linechart{width:100%;height:170px}
+
+/* notice / award doc */
+.legal-doc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:30px 34px;font-size:13.5px;color:var(--navy-2);line-height:1.8}
+.legal-doc h3{font-family:var(--serif);font-size:20px;text-align:center;color:var(--navy);margin-bottom:4px}
+.legal-doc .ctr{text-align:center;color:var(--muted);font-size:12px;margin-bottom:22px}
+.legal-doc .sig{margin-top:28px;border-top:1px dashed var(--line);padding-top:18px;display:flex;justify-content:space-between;align-items:flex-end}
+.sig-name{font-family:var(--serif);font-style:italic;font-size:24px;color:var(--navy);border-bottom:1px solid var(--navy-3);padding-bottom:3px;margin-bottom:6px}
+
+/* assign neutral list */
+.neutral-row{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--line);border-radius:12px;margin-bottom:11px;cursor:pointer;transition:.15s}
+.neutral-row:hover,.neutral-row.sel{border-color:var(--gold);background:#FFFEF8}
+.neutral-row .radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.neutral-row.sel .radio{border-color:var(--gold)}
+.neutral-row.sel .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--gold)}
+.rating{color:var(--gold);font-weight:700;font-size:12.5px;display:flex;align-items:center;gap:3px}
+
+/* toast */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:14px 22px;border-radius:13px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:12px;font-size:13.5px;font-weight:500;z-index:500;opacity:0;transition:.35s}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast .ic{width:28px;height:28px;border-radius:50%;background:var(--emerald);display:flex;align-items:center;justify-content:center}
+.toast .ic svg{width:16px;height:16px;color:#fff;stroke-width:3}
+
+.activity .a{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-soft)}
+.activity .a:last-child{border:none}
+.activity .a .di{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.activity .a .tx{font-size:12.5px;color:var(--navy-2);line-height:1.4}
+.activity .a .tx b{font-weight:700;color:var(--navy)}
+.activity .a .tm{font-size:11px;color:var(--muted-2);margin-top:2px}
+
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}.hero-art{display:none}.svc-grid,.works-grid{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-2b{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Demo chrome -->
+  <div class="chrome">
+    <div class="brand">
+      <div class="mark">⚖</div>
+      <div>ODR Platform <small>by Imperial Tech Innovations</small></div>
+    </div>
+    <span class="demo-tag">● Interactive Demo</span>
+    <div class="spacer"></div>
+    <div class="crumbs" id="crumbs"><b>Public Website</b></div>
+    <button class="reset-btn" onclick="go('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      Restart Demo
+    </button>
+  </div>
+
+  <div id="stage">
+    <!-- screens injected below -->
+  </div>
+</div>
+
+<div class="toast" id="toast"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div><span id="toast-msg">Done</span></div>
+
+<script>
+/* ============================================================
+   ODR PLATFORM — DEMO PROTOTYPE
+   Single-file clickable demo. All 18 screens + navigation.
+   ============================================================ */
+
+const stage = document.getElementById('stage');
+const crumbs = document.getElementById('crumbs');
+
+/* SVG icon helper */
+const I = {
+  grid:'<path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>',
+  folder:'<path d="M4 4h5l2 3h9v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  video:'<path d="m23 7-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
+  doc:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/>',
+  user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  card:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>',
+  chart:'<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>',
+  pie:'<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
+  gavel:'<path d="m14 13-7.5 7.5a2.12 2.12 0 0 1-3-3L11 10M16 16l4-4M4 20h6"/><path d="m14.5 5.5 4 4M11 8l6 6M14 5l5 5"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+  scale:'<path d="M12 3v18M3 7h18M6 7l-3 7a4 4 0 0 0 6 0zM18 7l-3 7a4 4 0 0 0 6 0z"/>',
+  award:'<circle cx="12" cy="8" r="6"/><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>',
+  msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'
+};
+function svg(p,extra=''){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ${extra}>${p}</svg>`}
+
+/* ---- screen registry ---- */
+const screens = {};
+function reg(id,label,html){screens[id]={label,html}}
+
+/* sidebar builder */
+function sidebar(role,active,items){
+  const meta={
+    claimant:{name:'John Doe',role:'Claimant',av:'JD',cls:'av-c'},
+    respondent:{name:'Acme Corp Ltd.',role:'Respondent',av:'AC',cls:'av-r'},
+    neutral:{name:'Ananya Sharma',role:'Arbitrator',av:'AS',cls:'av-n'},
+    admin:{name:'R. Reddy',role:'Administrator',av:'RR',cls:'av-a'}
+  }[role];
+  let nav='';
+  items.forEach(g=>{
+    if(g.label)nav+=`<div class="nav-label">${g.label}</div>`;
+    g.items.forEach(it=>{
+      nav+=`<a class="${it.id===active?'on':''}" onclick="go('${it.go}')">${svg(I[it.icon])}<span>${it.t}</span>${it.badge?`<span class="badge">${it.badge}</span>`:''}</a>`;
+    });
+  });
+  return `<aside class="sidebar">
+    <div class="s-brand"><div class="mark">⚖</div><div class="t">ODR<small>PLATFORM</small></div></div>
+    <nav class="nav">${nav}</nav>
+    <div class="s-foot"><div class="av ${meta.cls.replace('av-','av av-')}" style="width:34px;height:34px">${meta.av}</div>
+      <div class="nm">${meta.name}<small>${meta.role}</small></div>
+      <span style="margin-left:auto;cursor:pointer;color:#64748B" onclick="go('login')">${svg(I.logout,'width="16" height="16"')}</span>
+    </div>
+  </aside>`;
+}
+function topbar(title,sub,opts={}){
+  return `<header class="topbar">
+    <h1>${title}${sub?`<small>${sub}</small>`:''}</h1>
+    <div class="spacer"></div>
+    <div class="searchbox">${svg(I.search)}<span>Search cases, parties, documents…</span></div>
+    <div class="icon-btn" onclick="go('notifications')">${svg(I.bell)}<span class="dot"></span></div>
+    ${opts.cta||''}
+  </header>`;
+}
+
+/* ============================================================
+   SCREEN 1 — PUBLIC HOMEPAGE
+   ============================================================ */
+reg('home','Public Website',`
+<div class="pub">
+  <nav class="pub-nav">
+    <div class="lg"><div class="mark">⚖</div><div>ODR Platform<small>RESOLVE • ONLINE</small></div></div>
+    <div class="links">
+      <a onclick="go('home')">Home</a><a>About</a><a>Services</a><a onclick="go('home')">How It Works</a><a>Pricing</a><a>Contact</a>
+    </div>
+    <div class="spacer"></div>
+    <a class="btn btn-ghost btn-sm" onclick="go('login')">Login</a>
+    <a class="btn btn-gold btn-sm hot" onclick="go('login')">File a Dispute</a>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <span class="eyebrow">⚖ Trusted Online Dispute Resolution</span>
+      <h1>Resolve Disputes<br><em>Online.</em> Fast.<br>Secure. Transparent.</h1>
+      <p>Our ODR platform helps individuals and businesses resolve disputes end-to-end through negotiation, mediation, conciliation and arbitration — without ever stepping into a courtroom.</p>
+      <div class="cta">
+        <a class="btn btn-gold hot" onclick="go('login')">${svg(I.file,'width="17" height="17"')} File a Dispute</a>
+        <a class="btn btn-ghost" onclick="go('login')">Become a Neutral</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="glow"></div><div class="glow2"></div>
+      <div class="scales">⚖️</div>
+      <div class="float-card fc1"><div class="ic" style="background:var(--emerald-soft)">✅</div><div><b>Case Resolved</b><small>ODR-2026-001 · 18 days</small></div></div>
+      <div class="float-card fc2"><div class="ic" style="background:var(--blue-soft)">📹</div><div><b>Hearing Live</b><small>3 parties connected</small></div></div>
+    </div>
+  </section>
+
+  <div class="stats-strip">
+    <div class="st"><div class="ic">⚖️</div><div><div class="v">2,548+</div><div class="l">Cases Resolved</div></div></div>
+    <div class="st"><div class="ic">📈</div><div><div class="v">92%</div><div class="l">Settlement Rate</div></div></div>
+    <div class="st"><div class="ic">⏱️</div><div><div class="v">28 Days</div><div class="l">Avg. Resolution</div></div></div>
+    <div class="st"><div class="ic">👥</div><div><div class="v">150+</div><div class="l">Expert Neutrals</div></div></div>
+  </div>
+
+  <section class="svc">
+    <h2>Four Ways to Resolve</h2>
+    <p class="lead">Every dispute is different. Choose the path that fits — or let our neutrals guide you to the right one.</p>
+    <div class="svc-grid">
+      <div class="svc-card"><div class="ic">🤝</div><h3>Negotiation</h3><p>Parties communicate directly with the help of our online tools to reach a mutually acceptable solution.</p></div>
+      <div class="svc-card"><div class="ic">🕊️</div><h3>Mediation</h3><p>A neutral mediator helps parties identify issues and reach an amicable, private settlement.</p></div>
+      <div class="svc-card"><div class="ic">💬</div><h3>Conciliation</h3><p>A conciliator facilitates discussions and proposes balanced settlement options to both sides.</p></div>
+      <div class="svc-card"><div class="ic">⚖️</div><h3>Arbitration</h3><p>A neutral arbitrator hears the case and issues a binding, enforceable award.</p></div>
+    </div>
+  </section>
+
+  <section class="works">
+    <h2>How ODR Works</h2>
+    <div class="works-grid">
+      <div class="work-step"><div class="n">1</div><h4>File Dispute</h4><p>Submit your dispute online with party details, claim amount and supporting evidence.</p></div>
+      <div class="work-step"><div class="n">2</div><h4>Notify Parties</h4><p>The respondent is automatically served notice with a secure link to log in and respond.</p></div>
+      <div class="work-step"><div class="n">3</div><h4>Conduct Proceedings</h4><p>An expert neutral is assigned. Hearings happen over secure video with shared evidence.</p></div>
+      <div class="work-step"><div class="n">4</div><h4>Resolution</h4><p>A settlement or binding award is issued digitally — signed, sealed and downloadable.</p></div>
+    </div>
+  </section>
+
+  <footer class="pub-foot">
+    <div class="lg"><div class="mark">⚖</div>ODR Platform</div>
+    <div class="spacer"></div>
+    <span>© 2026 Imperial Tech Innovations · Confidential Demo · Built for Mr. Rudvik Reddy</span>
+  </footer>
+</div>
+`);
+
+/* ============================================================
+   SCREEN 2 — LOGIN
+   ============================================================ */
+reg('login','Authentication',`
+<div class="login-wrap">
+  <div class="login-art">
+    <div class="glow"></div>
+    <div class="mark">⚖</div>
+    <h2>Welcome back to<br>justice, online.</h2>
+    <p>Sign in to file disputes, track your cases, attend hearings and access settlements — all in one secure workspace.</p>
+    <div class="pts">
+      <div class="p"><span class="c">${svg(I.check)}</span> Bank-grade encrypted case storage</div>
+      <div class="p"><span class="c">${svg(I.check)}</span> OTP-secured login for every role</div>
+      <div class="p"><span class="c">${svg(I.check)}</span> Full audit trail on every action</div>
+    </div>
+  </div>
+  <div class="login-form">
+    <div class="login-card">
+      <h3>Sign in to your account</h3>
+      <p class="sub">Choose how you'd like to continue.</p>
+      <div class="login-tabs">
+        <button class="on">Email Login</button><button>OTP Login</button>
+      </div>
+      <div class="field"><label>Email Address</label><input value="john.doe@email.com"></div>
+      <div class="field"><label>Password</label><input type="password" value="••••••••••"></div>
+      <div class="row">
+        <label><input type="checkbox" checked style="width:auto"> Remember me</label>
+        <a class="link-gold">Forgot password?</a>
+      </div>
+      <button class="btn btn-gold hot" style="width:100%;justify-content:center;padding:13px" onclick="go('claimant-dash')">Login as Claimant</button>
+      <p style="text-align:center;font-size:12.5px;color:var(--muted);margin-top:18px">New here? <a class="link-gold">Create an account</a></p>
+
+      <div style="margin-top:26px;border-top:1px solid var(--line);padding-top:20px">
+        <p style="font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted-2);text-align:center;margin-bottom:13px">Demo — jump to any portal</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+          <button class="btn btn-ghost btn-sm" style="justify-content:center" onclick="go('claimant-dash')">👤 Claimant</button>
+          <button class="btn btn-ghost btn-sm" style="justify-content:center" onclick="go('respondent-dash')">📩 Respondent</button>
+          <button class="btn btn-ghost btn-sm" style="justify-content:center" onclick="go('neutral-dash')">⚖️ Neutral</button>
+          <button class="btn btn-ghost btn-sm" style="justify-content:center" onclick="go('admin-dash')">🛡️ Admin</button>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="justify-content:center;width:100%;margin-top:9px" onclick="go('mobile')">📱 Mobile / Responsive Views</button>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* nav config for claimant */
+const claimantNav=[
+  {items:[
+    {id:'dash',go:'claimant-dash',icon:'grid',t:'Dashboard'},
+    {id:'cases',go:'claimant-case',icon:'folder',t:'My Cases'},
+    {id:'file',go:'file-dispute',icon:'plus',t:'File New Dispute'},
+    {id:'hear',go:'hearing-room',icon:'video',t:'Hearings'},
+    {id:'docs',go:'doc-vault',icon:'doc',t:'Documents'},
+    {id:'pay',go:'claimant-dash',icon:'card',t:'Payments'}
+  ]},
+  {label:'Account',items:[
+    {id:'notif',go:'notifications',icon:'bell',t:'Notifications',badge:'3'},
+    {id:'prof',go:'claimant-dash',icon:'user',t:'Profile'}
+  ]}
+];
+
+/* ============================================================
+   SCREEN 3 — CLAIMANT DASHBOARD
+   ============================================================ */
+reg('claimant-dash','Claimant Portal',`
+<div class="portal">
+  ${sidebar('claimant','dash',claimantNav)}
+  <div class="main">
+    ${topbar('Welcome back, John','Here\'s what\'s happening with your cases today.',{cta:`<a class="btn btn-gold hot" onclick="go('file-dispute')">${svg(I.plus,'width="16" height="16"')} File New Dispute</a>`})}
+    <div class="content">
+      <div class="kpi-grid">
+        <div class="kpi"><div class="ic" style="background:var(--amber-soft);color:var(--amber)">${svg(I.folder)}</div><div class="lbl">Active Cases</div><div class="val">3</div><span class="trend up">▲ 1 this month</span></div>
+        <div class="kpi"><div class="ic" style="background:var(--emerald-soft);color:var(--emerald)">${svg(I.check)}</div><div class="lbl">Closed Cases</div><div class="val">7</div><span class="trend up">▲ 92% settled</span></div>
+        <div class="kpi"><div class="ic" style="background:var(--blue-soft);color:var(--blue)">${svg(I.calendar)}</div><div class="lbl">Upcoming Hearings</div><div class="val">2</div><span class="trend flat">Next in 4 days</span></div>
+        <div class="kpi"><div class="ic" style="background:#EDE9FE;color:#7C3AED">${svg(I.card)}</div><div class="lbl">Payments Made</div><div class="val" style="font-size:24px">₹48,500</div><span class="trend flat">Across 10 cases</span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-pad" style="padding-bottom:0"><div class="section-head"><h2>Recent Cases</h2><a class="link-gold" onclick="go('claimant-case')">View all ${svg(I.check,'width="0"')}→</a></div></div>
+          <table>
+            <thead><tr><th>Case ID</th><th>Respondent</th><th>Type</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr onclick="go('claimant-case')"><td class="cid">ODR-2026-001</td><td>Acme Corp Ltd.</td><td>Commercial</td><td><span class="chip chip-progress"><span class="d"></span>In Progress</span></td><td style="text-align:right">→</td></tr>
+              <tr onclick="go('claimant-case')"><td class="cid">ODR-2026-002</td><td>Beta Industries</td><td>Service Dispute</td><td><span class="chip chip-scheduled"><span class="d"></span>Hearing Scheduled</span></td><td style="text-align:right">→</td></tr>
+              <tr onclick="go('claimant-case')"><td class="cid">ODR-2026-003</td><td>Gamma Pvt. Ltd.</td><td>Contractual</td><td><span class="chip chip-evidence"><span class="d"></span>Evidence Stage</span></td><td style="text-align:right">→</td></tr>
+              <tr onclick="go('claimant-case')"><td class="cid">ODR-2025-118</td><td>Delta Services</td><td>Commercial</td><td><span class="chip chip-closed"><span class="d"></span>Resolved</span></td><td style="text-align:right">→</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card card-pad">
+          <div class="section-head"><h2>Upcoming Hearings</h2></div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;gap:13px;padding:15px;border:1px solid var(--line);border-radius:12px;align-items:center">
+              <div style="width:46px;height:46px;border-radius:11px;background:var(--navy);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center"><b style="font-size:16px;font-family:var(--serif)">12</b><small style="font-size:9px;letter-spacing:.5px">MAY</small></div>
+              <div style="flex:1"><b style="font-size:13.5px;color:var(--navy)">ODR-2026-001 · Acme Corp</b><div style="font-size:12px;color:var(--muted)">${svg(I.clock,'width="12" height="12" style="vertical-align:-2px"')} 10:30 AM · Video Hearing</div></div>
+              <button class="btn btn-gold btn-sm hot" onclick="go('hearing-room')">Join</button>
+            </div>
+            <div style="display:flex;gap:13px;padding:15px;border:1px solid var(--line);border-radius:12px;align-items:center">
+              <div style="width:46px;height:46px;border-radius:11px;background:var(--navy-3);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center"><b style="font-size:16px;font-family:var(--serif)">18</b><small style="font-size:9px;letter-spacing:.5px">MAY</small></div>
+              <div style="flex:1"><b style="font-size:13.5px;color:var(--navy)">ODR-2026-002 · Beta Inds.</b><div style="font-size:12px;color:var(--muted)">${svg(I.clock,'width="12" height="12" style="vertical-align:-2px"')} 03:00 PM · Mediation</div></div>
+              <button class="btn btn-ghost btn-sm">Details</button>
+            </div>
+            <div style="background:linear-gradient(135deg,var(--navy),var(--navy-2));border-radius:13px;padding:18px;color:#fff;margin-top:4px">
+              <div style="font-size:13px;font-weight:700;margin-bottom:5px">Need to raise a new dispute?</div>
+              <div style="font-size:12px;color:#94A3B8;margin-bottom:13px">File online in under 5 minutes with guided steps.</div>
+              <button class="btn btn-gold btn-sm" onclick="go('file-dispute')">${svg(I.plus,'width="14" height="14"')} Start Filing</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* ============================================================
+   SCREEN 4 — FILE DISPUTE WIZARD
+   ============================================================ */
+reg('file-dispute','Claimant Portal',`
+<div class="portal">
+  ${sidebar('claimant','file',claimantNav)}
+  <div class="main">
+    ${topbar('File a New Dispute','Step 3 of 6 — Dispute Details')}
+    <div class="content">
+      <div class="card card-pad" style="max-width:880px;margin:0 auto">
+        <div class="steps">
+          <div class="st done"><div class="num">${svg(I.check,'width="16" height="16"')}</div><div class="lbl">Claimant</div></div>
+          <div class="bar fill"></div>
+          <div class="st done"><div class="num">${svg(I.check,'width="16" height="16"')}</div><div class="lbl">Respondent</div></div>
+          <div class="bar fill"></div>
+          <div class="st cur"><div class="num">3</div><div class="lbl">Dispute Details</div></div>
+          <div class="bar"></div>
+          <div class="st"><div class="num">4</div><div class="lbl">Claim Amount</div></div>
+          <div class="bar"></div>
+          <div class="st"><div class="num">5</div><div class="lbl">Evidence</div></div>
+          <div class="bar"></div>
+          <div class="st"><div class="num">6</div><div class="lbl">Payment</div></div>
+        </div>
+
+        <h2 style="font-size:18px;margin-bottom:4px">Tell us about the dispute</h2>
+        <p class="muted" style="font-size:13.5px;margin-bottom:24px">Provide the nature of the dispute so the right neutral can be assigned.</p>
+
+        <div class="grid-2b">
+          <div class="field"><label>Dispute Category</label><select><option>Commercial Dispute</option><option>Service Dispute</option><option>Contractual Dispute</option><option>Property Dispute</option></select></div>
+          <div class="field"><label>Sub Category</label><select><option>Breach of Contract</option><option>Non-payment</option><option>Quality of Service</option></select></div>
+        </div>
+        <div class="field"><label>Brief Description of Dispute</label><textarea>The respondent failed to deliver the goods as per the terms agreed in the contract dated 12 Jan 2026, despite full advance payment. Repeated follow-ups have not resulted in delivery or refund.</textarea></div>
+        <div class="field"><label>Relief Sought</label><textarea>We seek a refund of the advance amount along with compensation for financial losses and costs incurred due to the breach of contract.</textarea></div>
+
+        <div style="display:flex;justify-content:space-between;margin-top:8px">
+          <button class="btn btn-ghost" onclick="go('claimant-dash')">← Back</button>
+          <button class="btn btn-gold hot" onclick="toast('Dispute details saved · Step 4');setTimeout(()=>go('claimant-case'),900)">Save & Continue →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* ============================================================
+   SCREEN 5 — CASE DETAILS
+   ============================================================ */
+reg('claimant-case','Claimant Portal',`
+<div class="portal">
+  ${sidebar('claimant','cases',claimantNav)}
+  <div class="main">
+    ${topbar('Case ODR-2026-001','Acme Corp Ltd. · Commercial Dispute · Filed 02 May 2026')}
+    <div class="content">
+      <div class="grid-2">
+        <div>
+          <div class="card card-pad" style="margin-bottom:22px">
+            <div class="section-head"><h2>Case Timeline</h2><span class="chip chip-progress"><span class="d"></span>In Progress</span></div>
+            <div class="tl" style="margin-top:8px">
+              <div class="ev done"><div class="dot">${svg(I.check)}</div><div class="dt">02 MAY 2026</div><div class="ti">Dispute Filed</div><div class="ds">You filed the dispute successfully. Case number auto-generated.</div></div>
+              <div class="ev done"><div class="dot">${svg(I.check)}</div><div class="dt">05 MAY 2026</div><div class="ti">Respondent Accepted</div><div class="ds">Acme Corp Ltd. accepted the notice and joined the proceedings.</div></div>
+              <div class="ev done"><div class="dot">${svg(I.check)}</div><div class="dt">08 MAY 2026</div><div class="ti">Neutral Assigned</div><div class="ds">Ms. Ananya Sharma (Arbitrator) was assigned to the case.</div></div>
+              <div class="ev cur"><div class="dot"></div><div class="dt">12 MAY 2026 · 10:30 AM</div><div class="ti">Hearing Scheduled</div><div class="ds">Virtual hearing scheduled. Join from your dashboard.</div></div>
+              <div class="ev"><div class="dot"></div><div class="dt">PENDING</div><div class="ti">Award / Settlement</div><div class="ds">Final decision will be issued after the hearing concludes.</div></div>
+            </div>
+          </div>
+          <div class="card card-pad">
+            <div class="section-head"><h2>Messages</h2><a class="link-gold">View thread →</a></div>
+            <div class="hr-msg" style="margin-bottom:14px"><div class="who" style="color:var(--navy)">Ananya Sharma <small>Neutral · 09:15 AM</small></div><div class="bub" style="background:var(--bg);color:var(--navy-2)">Please ensure all evidence is uploaded before the hearing on 12 May. We'll review the contract and delivery records together.</div></div>
+            <div class="hr-msg"><div class="who" style="color:var(--navy)">You <small>09:22 AM</small></div><div class="bub" style="background:#FFFEF8;border:1px solid #F0E4B8;color:var(--navy-2)">Understood. All documents have been uploaded to the case vault.</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card card-pad" style="margin-bottom:22px">
+            <div class="section-head"><h2>Case Summary</h2></div>
+            <div style="display:flex;flex-direction:column;gap:13px;font-size:13px">
+              <div style="display:flex;justify-content:space-between"><span class="muted">Case Type</span><b>Commercial</b></div>
+              <div style="display:flex;justify-content:space-between"><span class="muted">Respondent</span><b>Acme Corp Ltd.</b></div>
+              <div style="display:flex;justify-content:space-between"><span class="muted">Claim Amount</span><b>₹25,00,000</b></div>
+              <div style="display:flex;justify-content:space-between"><span class="muted">Neutral</span><b>Ananya Sharma</b></div>
+              <div style="display:flex;justify-content:space-between"><span class="muted">Next Hearing</span><b style="color:var(--gold-deep)">12 May, 10:30 AM</b></div>
+            </div>
+            <button class="btn btn-gold hot" style="width:100%;justify-content:center;margin-top:18px" onclick="go('hearing-room')">${svg(I.video,'width="16" height="16"')} Join Hearing</button>
+          </div>
+          <div class="card card-pad">
+            <div class="section-head"><h2>Documents</h2><a class="link-gold" onclick="go('doc-vault')">View all →</a></div>
+            <div class="doc-row"><div class="fic pdf">PDF</div><div style="flex:1"><div class="nm">Contract_Agreement.pdf</div><div class="sz">2.4 MB · Uploaded 02 May</div></div>${svg(I.doc,'width="16" height="16" style="color:var(--muted)"')}</div>
+            <div class="doc-row"><div class="fic pdf">PDF</div><div style="flex:1"><div class="nm">Invoice_Advance.pdf</div><div class="sz">880 KB · Uploaded 02 May</div></div>${svg(I.doc,'width="16" height="16" style="color:var(--muted)"')}</div>
+            <div class="doc-row"><div class="fic zip">ZIP</div><div style="flex:1"><div class="nm">Email_Correspondence.zip</div><div class="sz">5.1 MB · Uploaded 04 May</div></div>${svg(I.doc,'width="16" height="16" style="color:var(--muted)"')}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* ============================================================
+   RESPONDENT PORTAL
+   ============================================================ */
+const respNav=[
+  {items:[
+    {id:'dash',go:'respondent-dash',icon:'grid',t:'Dashboard'},
+    {id:'cases',go:'claimant-case',icon:'folder',t:'My Cases',badge:'1'},
+    {id:'ev',go:'doc-vault',icon:'doc',t:'Evidence'},
+    {id:'hear',go:'hearing-room',icon:'video',t:'Hearings'},
+    {id:'set',go:'mediation-room',icon:'msg',t:'Settlement'}
+  ]},
+  {label:'Account',items:[
+    {id:'notif',go:'notifications',icon:'bell',t:'Notifications',badge:'2'},
+    {id:'prof',go:'respondent-dash',icon:'user',t:'Profile'}
+  ]}
+];
+
+/* SCREEN 6 — RESPONDENT DASHBOARD (Notice Received) */
+reg('respondent-dash','Respondent Portal',`
+<div class="portal">
+  ${sidebar('respondent','dash',respNav)}
+  <div class="main">
+    ${topbar('Respondent Dashboard','You have been served notice in 1 active dispute.')}
+    <div class="content">
+      <div class="card" style="border:1.5px solid var(--gold);background:#FFFEF8;margin-bottom:22px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:18px;padding:22px">
+          <div style="width:52px;height:52px;border-radius:13px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">📩</div>
+          <div style="flex:1">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gold-deep);margin-bottom:3px">New Notice Received · 05 May 2026</div>
+            <div style="font-size:16px;font-weight:700;color:var(--navy)">You have been named as respondent in Case ODR-2026-001</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:3px">Filed by <b>John Doe</b> · Commercial Dispute · Claim ₹25,00,000 · Response due within 7 days.</div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-ghost" onclick="toast('Notice declined')">Decline</button>
+            <button class="btn btn-gold hot" onclick="toast('Participation accepted · Case joined');setTimeout(()=>go('claimant-case'),900)">Accept & Respond</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="ic" style="background:var(--amber-soft);color:var(--amber)">${svg(I.folder)}</div><div class="lbl">Active Disputes</div><div class="val">1</div><span class="trend flat">Response pending</span></div>
+        <div class="kpi"><div class="ic" style="background:var(--blue-soft);color:var(--blue)">${svg(I.calendar)}</div><div class="lbl">Upcoming Hearings</div><div class="val">1</div><span class="trend flat">12 May</span></div>
+        <div class="kpi"><div class="ic" style="background:#EDE9FE;color:#7C3AED">${svg(I.doc)}</div><div class="lbl">Documents to Submit</div><div class="val">2</div><span class="trend flat">Reply + evidence</span></div>
+        <div class="kpi"><div class="ic" style="background:var(--emerald-soft);color:var(--emerald)">${svg(I.check)}</div><div class="lbl">Resolved</div><div class="val">4</div><span class="trend up">All settled</span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-pad" style="padding-bottom:0"><div class="section-head"><h2>My Disputes</h2></div></div>
+          <table>
+            <thead><tr><th>Case ID</th><th>Claimant</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr onclick="go('claimant-case')"><td class="cid">ODR-2026-001</td><td>John Doe</td><td><span class="chip chip-progress"><span class="d"></span>Response Pending</span></td><td style="text-align:right">→</td></tr>
+              <tr onclick="go('claimant-case')"><td class="cid">ODR-2025-097</td><td>Sigma LLP</td><td><span class="chip chip-closed"><span class="d"></span>Settled</span></td><td style="text-align:right">→</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h2>Submit Your Reply</h2></div>
+          <div class="field"><label>Statement of Defence</label><textarea placeholder="Enter your response to the claim…">The goods were delivered as per the revised timeline communicated to the claimant. Supporting delivery records are attached.</textarea></div>
+          <div class="doc-row" style="border-style:dashed;justify-content:center;color:var(--muted)" onclick="toast('Upload dialog (demo)')">${svg(I.doc,'width="16" height="16"')} Click to upload reply &amp; evidence</div>
+          <button class="btn btn-gold" style="width:100%;justify-content:center;margin-top:6px" onclick="toast('Reply submitted to the case')">Submit Reply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* ============================================================
+   NEUTRAL PORTAL
+   ============================================================ */
+const neutralNav=[
+  {items:[
+    {id:'dash',go:'neutral-dash',icon:'grid',t:'Dashboard'},
+    {id:'cases',go:'neutral-dash',icon:'folder',t:'Assigned Cases',badge:'3'},
+    {id:'cal',go:'hearing-scheduler',icon:'calendar',t:'Calendar'},
+    {id:'hear',go:'hearing-room',icon:'video',t:'Hearings'},
+    {id:'awards',go:'award',icon:'award',t:'Awards'}
+  ]},
+  {label:'Account',items:[
+    {id:'msg',go:'notifications',icon:'msg',t:'Messages',badge:'5'},
+    {id:'avail',go:'neutral-dash',icon:'clock',t:'Availability'}
+  ]}
+];
+
+/* SCREEN 9 — NEUTRAL DASHBOARD */
+reg('neutral-dash','Neutral Portal',`
+<div class="portal">
+  ${sidebar('neutral','dash',neutralNav)}
+  <div class="main">
+    ${topbar('Welcome, Ananya','Your arbitration & mediation workload at a glance.')}
+    <div class="content">
+      <div class="kpi-grid">
+        <div class="kpi"><div class="ic" style="background:var(--blue-soft);color:var(--blue)">${svg(I.folder)}</div><div class="lbl">Assigned Cases</div><div class="val">5</div><span class="trend up">▲ 2 new</span></div>
+        <div class="kpi"><div class="ic" style="background:var(--amber-soft);color:var(--amber)">${svg(I.calendar)}</div><div class="lbl">Upcoming Hearings</div><div class="val">3</div><span class="trend flat">This week</span></div>
+        <div class="kpi"><div class="ic" style="background:#EDE9FE;color:#7C3AED">${svg(I.award)}</div><div class="lbl">Awards Pending</div><div class="val">2</div><span class="trend flat">To be drafted</span></div>
+        <div class="kpi"><div class="ic" style="background:var(--emerald-soft);color:var(--emerald)">${svg(I.check)}</div><div class="lbl">Completed</div><div class="val">18</div><span class="trend up">▲ 96% upheld</span></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-pad" style="padding-bottom:0"><div class="section-head"><h2>Assigned Cases</h2></div></div>
+          <table>
+            <thead><tr><th>Case ID</th><th>Parties</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr onclick="go('hearing-scheduler')"><td class="cid">ODR-2026-001</td><td>John Doe vs Acme Corp Ltd.</td><td><span class="chip chip-scheduled"><span class="d"></span>Hearing Scheduled</span></td><td style="text-align:right">→</td></tr>
+              <tr onclick="go('hearing-scheduler')"><td class="cid">ODR-2026-014</td><td>Rahul V. vs Gamma Pvt. Ltd.</td><td><span class="chip chip-evidence"><span class="d"></span>Evidence Stage</span></td><td style="text-align:right">→</td></tr>
+              <tr onclick="go('award')"><td class="cid">ODR-2026-019</td><td>Sneha I. vs Delta Solutions</td><td><span class="chip chip-progress"><span class="d"></span>Award Due</span></td><td style="text-align:right">→</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h2>This Week</h2></div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;gap:13px;padding:14px;border:1px solid var(--line);border-radius:12px;align-items:center">
+              <div style="width:44px;height:44px;border-radius:11px;background:var(--gold);color:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center"><b style="font-size:15px;font-family:var(--serif)">12</b><small style="font-size:9px">MAY</small></div>
+              <div style="flex:1"><b style="font-size:13px;color:var(--navy)">Hearing · ODR-2026-001</b><div style="font-size:11.5px;color:var(--muted)">10:30 AM · John Doe vs Acme Corp</div></div>
+              <button class="btn btn-gold btn-sm hot" onclick="go('hearing-room')">Start</button>
+            </div>
+            <div style="display:flex;gap:13px;padding:14px;border:1px solid var(--line);border-radius:12px;align-items:center">
+              <div style="width:44px;height:44px;border-radius:11px;background:var(--navy-3);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center"><b style="font-size:15px;font-family:var(--serif)">15</b><small style="font-size:9px">MAY</small></div>
+              <div style="flex:1"><b style="font-size:13px;color:var(--navy)">Mediation · ODR-2026-014</b><div style="font-size:11.5px;color:var(--muted)">02:00 PM · Rahul V. vs Gamma</div></div>
+              <button class="btn btn-ghost btn-sm" onclick="go('hearing-scheduler')">View</button>
+            </div>
+            <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:4px" onclick="go('hearing-scheduler')">${svg(I.calendar,'width="15" height="15"')} Open Full Calendar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* SCREEN 10 — HEARING SCHEDULER */
+reg('hearing-scheduler','Neutral Portal',`
+<div class="portal">
+  ${sidebar('neutral','cal',neutralNav)}
+  <div class="main">
+    ${topbar('Schedule Hearing','ODR-2026-001 — John Doe vs Acme Corp Ltd.')}
+    <div class="content">
+      <div class="grid-2">
+        <div class="card card-pad">
+          <div class="section-head"><h2>Select Date</h2><span class="muted" style="font-size:13px;font-weight:600">May 2026</span></div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center">
+            ${['S','M','T','W','T','F','S'].map(d=>`<div style="font-size:11px;font-weight:700;color:var(--muted-2);padding:6px 0">${d}</div>`).join('')}
+            ${Array.from({length:35},(_,i)=>{const d=i-3;if(d<1||d>31)return '<div></div>';const sel=d===12;const today=d===8;return `<div style="padding:9px 0;border-radius:9px;font-size:13px;font-weight:${sel?'700':'500'};cursor:pointer;${sel?'background:var(--navy);color:#fff':today?'background:var(--bg);color:var(--gold-deep);font-weight:700':'color:var(--navy-2)'}" onmouseover="this.style.background=this.style.background||'var(--bg)'">${d}</div>`}).join('')}
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h2>Available Time Slots</h2></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+            ${['09:00 AM','10:30 AM','11:45 AM','02:00 PM','03:30 PM','04:45 PM'].map((t,i)=>`<div style="padding:11px;text-align:center;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid ${i===1?'var(--gold)':'var(--line)'};${i===1?'background:#FFFEF8;color:var(--gold-deep)':'color:var(--navy-2)'}">${t}</div>`).join('')}
+          </div>
+          <div class="section-head"><h2>Participants</h2></div>
+          <div class="person" style="margin-bottom:11px"><div class="av av-c">JD</div><div class="meta"><b>John Doe</b><small>Claimant</small></div><span class="chip chip-paid" style="margin-left:auto"><span class="d"></span>Invited</span></div>
+          <div class="person" style="margin-bottom:11px"><div class="av av-r">AC</div><div class="meta"><b>Acme Corp Ltd.</b><small>Respondent</small></div><span class="chip chip-paid" style="margin-left:auto"><span class="d"></span>Invited</span></div>
+          <div class="field" style="margin-top:14px"><label>Meeting Link</label><input value="https://odr.platform/hearing/ODR-2026-001" readonly></div>
+          <button class="btn btn-gold hot" style="width:100%;justify-content:center" onclick="toast('Hearing scheduled · invites sent to all parties');setTimeout(()=>go('hearing-room'),1000)">${svg(I.calendar,'width="16" height="16"')} Confirm &amp; Schedule Hearing</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+
+
+/* ============================================================
+   SCREEN 11 — LIVE HEARING ROOM (WOW SCREEN)
+   ============================================================ */
+function vidTile(name,role,init,bg,neutral){
+  return `<div class="hr-vid ${neutral?'neutral':''}">
+    <div class="ph" style="background:linear-gradient(135deg,${bg})">${init}</div>
+    <div class="label"><span class="role">${role}</span> · ${name}</div>
+  </div>`;
+}
+reg('hearing-room','Live Hearing',`
+<div class="hr-wrap">
+  <div class="hr-top">
+    <div><div class="cid">ODR-2026-001 · Arbitration Hearing</div></div>
+    <div class="sub">John Doe vs Acme Corp Ltd.</div>
+    <div class="rec"><span class="d"></span>Recording</div>
+    <div class="tm" id="hr-timer">01:21:36</div>
+  </div>
+  <div class="hr-body">
+    <div class="hr-stage">
+      <div class="hr-vids">
+        ${vidTile('John Doe','Claimant','JD','#3B82F6,#1D4ED8',false)}
+        ${vidTile('Acme Corp Ltd.','Respondent','AC','#F59E0B,#D97706',false)}
+        ${vidTile('Ananya Sharma','Neutral / Arbitrator','AS','#10B981,#059669',true)}
+        <div class="hr-vid" style="background:var(--navy-2)">
+          <div style="text-align:center;color:#94A3B8">
+            <div style="font-size:30px;margin-bottom:6px">📄</div>
+            <div style="font-size:12.5px;font-weight:600;color:#E2E8F0">Shared: Contract_Agreement.pdf</div>
+            <div style="font-size:11px;margin-top:3px">Presented by Claimant</div>
+          </div>
+        </div>
+      </div>
+      <div class="hr-ctrl">
+        <div class="cb"><div class="b">${svg(I.bell,'width="20" height="20"')}</div><small>Mute</small></div>
+        <div class="cb"><div class="b">${svg(I.video,'width="20" height="20"')}</div><small>Stop Video</small></div>
+        <div class="cb"><div class="b">${svg(I.grid,'width="20" height="20"')}</div><small>Share Screen</small></div>
+        <div class="cb"><div class="b">${svg(I.users,'width="20" height="20"')}</div><small>Participants</small></div>
+        <div class="cb"><div class="b">${svg(I.msg,'width="20" height="20"')}</div><small>Chat</small></div>
+        <div class="cb end" onclick="toast('Hearing ended · recording saved to case vault');setTimeout(()=>go('award'),1100)"><div class="b">${svg(I.logout,'width="18" height="18"')} End Hearing</div></div>
+      </div>
+    </div>
+    <div class="hr-side">
+      <div class="hr-side-tabs"><button>Participants (3)</button><button class="on">Chat</button></div>
+      <div class="hr-chat">
+        <div class="hr-msg"><div class="who">Ananya Sharma <small>Neutral · 10:15</small></div><div class="bub">Please share the invoice related to the advance payment for the record.</div></div>
+        <div class="hr-msg"><div class="who" style="color:#93C5FD">John Doe <small>Claimant · 10:16</small></div><div class="bub">Uploading the invoice now — it's the advance payment receipt dated 12 Jan.</div></div>
+        <div class="hr-msg"><div class="who" style="color:#FCD34D">Acme Corp Ltd. <small>Respondent · 10:18</small></div><div class="bub">We have delivery documents to share that show the goods were dispatched.</div></div>
+        <div class="hr-msg"><div class="who">Ananya Sharma <small>Neutral · 10:19</small></div><div class="bub">Noted. Both parties, please keep evidence to the documents already on record.</div></div>
+      </div>
+      <div class="hr-input"><input placeholder="Type a message…"><div class="snd">${svg(I.msg,'width="17" height="17"')}</div></div>
+    </div>
+  </div>
+</div>
+`);
+
+/* ============================================================
+   SCREEN 12 — PRIVATE MEDIATION ROOM
+   ============================================================ */
+reg('mediation-room','Mediation',`
+<div class="portal">
+  ${sidebar('neutral','cases',neutralNav)}
+  <div class="main">
+    ${topbar('Private Mediation Room','ODR-2026-014 · Confidential — visible only to parties present',{cta:`<div class="tm" style="background:var(--bg);border:1px solid var(--line);color:var(--navy);font-weight:700;padding:7px 14px;border-radius:9px;font-size:13px">00:45:12</div>`})}
+    <div class="content">
+      <div class="grid-2">
+        <div>
+          <div class="card card-pad" style="margin-bottom:22px">
+            <div class="section-head"><h2>🔒 Confidential Discussion</h2><span class="chip chip-live"><span class="d"></span>Private</span></div>
+            <div class="hr-chat" style="background:var(--bg);border-radius:12px;padding:18px;max-height:none">
+              <div class="hr-msg" style="margin-bottom:14px"><div class="who" style="color:var(--navy)">Ananya Sharma <small>Mediator · 11:02</small></div><div class="bub" style="background:#fff;color:var(--navy-2)">Let's explore whether a partial settlement is acceptable to both sides today.</div></div>
+              <div class="hr-msg" style="margin-bottom:14px"><div class="who" style="color:var(--blue)">John Doe <small>11:04</small></div><div class="bub" style="background:var(--blue-soft);color:var(--navy-2)">We are open to a compromise if the refund is timely.</div></div>
+              <div class="hr-msg"><div class="who" style="color:var(--amber)">Acme Corp Ltd. <small>11:06</small></div><div class="bub" style="background:var(--amber-soft);color:var(--navy-2)">We can offer a partial refund of ₹15,00,000 as full settlement.</div></div>
+            </div>
+            <div class="hr-input" style="border:none;padding:14px 0 0"><input style="background:var(--bg);border:1px solid var(--line);color:var(--navy)" placeholder="Type a confidential message…"><div class="snd">${svg(I.msg,'width="17" height="17"')}</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="card card-pad" style="margin-bottom:22px">
+            <div class="section-head"><h2>Participants</h2></div>
+            <div class="person" style="margin-bottom:13px"><div class="av av-n">AS</div><div class="meta"><b>Ananya Sharma</b><small>Mediator (You)</small></div></div>
+            <div class="person" style="margin-bottom:13px"><div class="av av-c">JD</div><div class="meta"><b>John Doe</b><small>Claimant</small></div></div>
+            <div class="person"><div class="av av-r">AC</div><div class="meta"><b>Acme Corp Ltd.</b><small>Respondent</small></div></div>
+          </div>
+          <div class="card card-pad">
+            <div class="section-head"><h2>Settlement Draft</h2></div>
+            <div class="field"><label>Terms</label><textarea>Acme Corp Ltd. agrees to pay ₹15,00,000 to John Doe as full and final settlement of the dispute, within 15 working days. Both parties waive further claims.</textarea></div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="toast('Draft saved')">Save Draft</button>
+              <button class="btn btn-gold hot" style="flex:1;justify-content:center" onclick="toast('Settlement sent to both parties for approval')">Send to Parties</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* ============================================================
+   ADMIN PORTAL
+   ============================================================ */
+const adminNav=[
+  {items:[
+    {id:'dash',go:'admin-dash',icon:'grid',t:'Dashboard'},
+    {id:'cases',go:'case-mgmt',icon:'folder',t:'Cases',badge:'12'},
+    {id:'users',go:'admin-dash',icon:'users',t:'Users'},
+    {id:'neutrals',go:'assign-neutral',icon:'scale',t:'Neutrals'},
+    {id:'pay',go:'payment-dash',icon:'card',t:'Payments'},
+    {id:'rep',go:'analytics',icon:'chart',t:'Reports'}
+  ]},
+  {label:'System',items:[
+    {id:'notif',go:'notifications',icon:'bell',t:'Notifications'},
+    {id:'cms',go:'admin-dash',icon:'doc',t:'CMS'},
+    {id:'set',go:'admin-dash',icon:'gear',t:'Settings'}
+  ]}
+];
+
+/* SCREEN 6 — ADMIN DASHBOARD (control tower) */
+function donut(segs){ // segs: [{v, color}]
+  let acc=0;const r=52,c=2*Math.PI*r;
+  const parts=segs.map(s=>{const len=c*s.v/100;const dash=`${len} ${c-len}`;const off=-acc*c/100;acc+=s.v;return `<circle cx="70" cy="70" r="${r}" fill="none" stroke="${s.color}" stroke-width="18" stroke-dasharray="${dash}" stroke-dashoffset="${off}" transform="rotate(-90 70 70)"/>`}).join('');
+  return `<svg viewBox="0 0 140 140" style="width:140px;height:140px">${parts}</svg>`;
+}
+reg('admin-dash','Admin Portal',`
+<div class="portal">
+  ${sidebar('admin','dash',adminNav)}
+  <div class="main">
+    ${topbar('Control Dashboard','Platform-wide overview · live as of today')}
+    <div class="content">
+      <div class="kpi-grid">
+        <div class="kpi"><div class="ic" style="background:var(--blue-soft);color:var(--blue)">${svg(I.folder)}</div><div class="lbl">Total Cases</div><div class="val">1,248</div><span class="trend up">▲ 12% MoM</span></div>
+        <div class="kpi"><div class="ic" style="background:var(--amber-soft);color:var(--amber)">${svg(I.clock)}</div><div class="lbl">Active Cases</div><div class="val">632</div><span class="trend up">▲ 8% MoM</span></div>
+        <div class="kpi"><div class="ic" style="background:var(--emerald-soft);color:var(--emerald)">${svg(I.card)}</div><div class="lbl">Revenue (This Month)</div><div class="val" style="font-size:23px">₹18.7L</div><span class="trend up">▲ 9% MoM</span></div>
+        <div class="kpi"><div class="ic" style="background:#EDE9FE;color:#7C3AED">${svg(I.check)}</div><div class="lbl">Settlement Rate</div><div class="val">92%</div><span class="trend up">▲ 3% MoM</span></div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:22px">
+        <div class="card card-pad">
+          <div class="section-head"><h2>Cases by Status</h2></div>
+          <div style="display:flex;align-items:center;gap:20px">
+            ${donut([{v:52,color:'#D97706'},{v:25,color:'#2563EB'},{v:8,color:'#64748B'},{v:15,color:'#059669'}])}
+            <div class="legend">
+              <div class="lg"><span class="sw" style="background:#D97706"></span>In Progress<span class="v">632</span></div>
+              <div class="lg"><span class="sw" style="background:#2563EB"></span>Hearing<span class="v">312</span></div>
+              <div class="lg"><span class="sw" style="background:#64748B"></span>Pending<span class="v">100</span></div>
+              <div class="lg"><span class="sw" style="background:#059669"></span>Closed<span class="v">204</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h2>Cases by Type</h2></div>
+          <div style="display:flex;align-items:center;gap:20px">
+            ${donut([{v:45,color:'#0F172A'},{v:25,color:'#D4AF37'},{v:15,color:'#2563EB'},{v:15,color:'#94A3B8'}])}
+            <div class="legend">
+              <div class="lg"><span class="sw" style="background:#0F172A"></span>Commercial<span class="v">45%</span></div>
+              <div class="lg"><span class="sw" style="background:#D4AF37"></span>Service<span class="v">25%</span></div>
+              <div class="lg"><span class="sw" style="background:#2563EB"></span>Contractual<span class="v">15%</span></div>
+              <div class="lg"><span class="sw" style="background:#94A3B8"></span>Others<span class="v">15%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h2>Monthly Revenue</h2></div>
+          <div class="bars">
+            ${[55,68,60,82,74,95].map((h,i)=>`<div class="bgrp"><div class="bcol"><div class="b" style="height:${h}%;background:linear-gradient(180deg,var(--gold),var(--gold-deep))"></div></div><div class="bl">${['Jan','Feb','Mar','Apr','May','Jun'][i]}</div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-pad" style="padding-bottom:0"><div class="section-head"><h2>Recent Cases</h2><a class="link-gold" onclick="go('case-mgmt')">Manage all →</a></div></div>
+          <table>
+            <thead><tr><th>Case ID</th><th>Parties</th><th>Status</th><th>Neutral</th></tr></thead>
+            <tbody>
+              <tr onclick="go('case-mgmt')"><td class="cid">ODR-2026-001</td><td>Doe vs Acme</td><td><span class="chip chip-scheduled"><span class="d"></span>Hearing</span></td><td>A. Sharma</td></tr>
+              <tr onclick="go('assign-neutral')"><td class="cid">ODR-2026-024</td><td>Priya M. vs Beta</td><td><span class="chip chip-pending"><span class="d"></span>Unassigned</span></td><td>—</td></tr>
+              <tr onclick="go('case-mgmt')"><td class="cid">ODR-2026-019</td><td>Sneha vs Delta</td><td><span class="chip chip-progress"><span class="d"></span>Award Due</span></td><td>A. Sharma</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h2>Activity Feed</h2></div>
+          <div class="activity">
+            <div class="a"><div class="di" style="background:var(--blue-soft)">📁</div><div><div class="tx"><b>New case filed</b> — ODR-2026-024 by Priya Mehta</div><div class="tm">2 min ago</div></div></div>
+            <div class="a"><div class="di" style="background:var(--emerald-soft)">✅</div><div><div class="tx"><b>Award issued</b> — ODR-2026-007 closed</div><div class="tm">26 min ago</div></div></div>
+            <div class="a"><div class="di" style="background:var(--amber-soft)">📹</div><div><div class="tx"><b>Hearing scheduled</b> — ODR-2026-001 on 12 May</div><div class="tm">1 hr ago</div></div></div>
+            <div class="a"><div class="di" style="background:#EDE9FE">💳</div><div><div class="tx"><b>Payment received</b> — ₹25,000 filing fee</div><div class="tm">2 hrs ago</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* SCREEN 7 — CASE MANAGEMENT */
+reg('case-mgmt','Admin Portal',`
+<div class="portal">
+  ${sidebar('admin','cases',adminNav)}
+  <div class="main">
+    ${topbar('Case Management','632 active cases across the platform',{cta:`<button class="btn btn-ghost btn-sm">${svg(I.doc,'width="15" height="15"')} Export</button>`})}
+    <div class="content">
+      <div class="card">
+        <div class="card-pad" style="padding-bottom:14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line)">
+          ${['All','Pending','Assigned','In Progress','Hearing','Closed'].map((f,i)=>`<button class="btn ${i===0?'btn-navy':'btn-ghost'} btn-sm">${f}</button>`).join('')}
+          <div class="spacer" style="flex:1"></div>
+          <div class="searchbox" style="width:220px">${svg(I.search)}<span>Search…</span></div>
+        </div>
+        <table>
+          <thead><tr><th>Case ID</th><th>Claimant</th><th>Respondent</th><th>Status</th><th>Neutral</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr onclick="go('assign-neutral')"><td class="cid">ODR-2026-024</td><td>Priya Mehta</td><td>Beta Industries</td><td><span class="chip chip-pending"><span class="d"></span>Unassigned</span></td><td class="muted">—</td><td class="muted">10 May</td></tr>
+            <tr onclick="go('hearing-room')"><td class="cid">ODR-2026-001</td><td>John Doe</td><td>Acme Corp Ltd.</td><td><span class="chip chip-scheduled"><span class="d"></span>Hearing</span></td><td>A. Sharma</td><td class="muted">09 May</td></tr>
+            <tr><td class="cid">ODR-2026-014</td><td>Rahul Verma</td><td>Gamma Pvt. Ltd.</td><td><span class="chip chip-evidence"><span class="d"></span>Evidence</span></td><td>A. Sharma</td><td class="muted">08 May</td></tr>
+            <tr><td class="cid">ODR-2026-019</td><td>Sneha Iyer</td><td>Delta Solutions</td><td><span class="chip chip-progress"><span class="d"></span>Award Due</span></td><td>R. Kapoor</td><td class="muted">07 May</td></tr>
+            <tr><td class="cid">ODR-2026-031</td><td>Arjun Singh</td><td>Omega Corp</td><td><span class="chip chip-assigned"><span class="d"></span>Assigned</span></td><td>M. Iyer</td><td class="muted">06 May</td></tr>
+            <tr><td class="cid">ODR-2026-008</td><td>Kavya Rao</td><td>Zeta Traders</td><td><span class="chip chip-closed"><span class="d"></span>Closed</span></td><td>A. Sharma</td><td class="muted">04 May</td></tr>
+          </tbody>
+        </table>
+        <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line)">
+          <span class="muted" style="font-size:12.5px">Showing 6 of 632 cases</span>
+          <div style="display:flex;gap:6px">${['1','2','3','4','5'].map((p,i)=>`<div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;cursor:pointer;${i===0?'background:var(--navy);color:#fff':'border:1px solid var(--line);color:var(--navy-2)'}">${p}</div>`).join('')}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* SCREEN 8 — ASSIGN NEUTRAL */
+reg('assign-neutral','Admin Portal',`
+<div class="portal">
+  ${sidebar('admin','neutrals',adminNav)}
+  <div class="main">
+    ${topbar('Assign Neutral','ODR-2026-024 · Priya Mehta vs Beta Industries')}
+    <div class="content">
+      <div class="grid-2">
+        <div class="card card-pad">
+          <div class="section-head"><h2>Select a Neutral</h2><span class="muted" style="font-size:13px">Matched by expertise</span></div>
+          <div class="neutral-row sel">
+            <div class="radio"></div><div class="av av-n">AS</div>
+            <div style="flex:1"><b style="font-size:13.5px;color:var(--navy)">Ms. Ananya Sharma</b><div style="font-size:12px;color:var(--muted)">Commercial · Contract · 12 yrs</div></div>
+            <div style="text-align:right"><div class="rating">★ 4.9</div><span class="chip chip-paid" style="margin-top:4px"><span class="d"></span>Available</span></div>
+          </div>
+          <div class="neutral-row">
+            <div class="radio"></div><div class="av" style="background:linear-gradient(135deg,#6366F1,#4338CA)">RV</div>
+            <div style="flex:1"><b style="font-size:13.5px;color:var(--navy)">Mr. Rohit Verma</b><div style="font-size:12px;color:var(--muted)">Commercial · Arbitration · 10 yrs</div></div>
+            <div style="text-align:right"><div class="rating">★ 4.7</div><span class="chip chip-paid" style="margin-top:4px"><span class="d"></span>Available</span></div>
+          </div>
+          <div class="neutral-row">
+            <div class="radio"></div><div class="av" style="background:linear-gradient(135deg,#EC4899,#BE185D)">MI</div>
+            <div style="flex:1"><b style="font-size:13.5px;color:var(--navy)">Dr. Meera Iyer</b><div style="font-size:12px;color:var(--muted)">Corporate · Civil · 15 yrs</div></div>
+            <div style="text-align:right"><div class="rating">★ 4.8</div><span class="chip chip-pending" style="margin-top:4px"><span class="d"></span>Busy</span></div>
+          </div>
+          <div class="neutral-row">
+            <div class="radio"></div><div class="av" style="background:linear-gradient(135deg,#0EA5E9,#0369A1)">AK</div>
+            <div style="flex:1"><b style="font-size:13.5px;color:var(--navy)">Mr. Arvind Kapoor</b><div style="font-size:12px;color:var(--muted)">Commercial · 20 yrs</div></div>
+            <div style="text-align:right"><div class="rating">★ 4.6</div><span class="chip chip-paid" style="margin-top:4px"><span class="d"></span>Available</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="card card-pad" style="margin-bottom:22px">
+            <div class="section-head"><h2>Case Information</h2></div>
+            <div style="display:flex;flex-direction:column;gap:13px;font-size:13px">
+              <div style="display:flex;justify-content:space-between"><span class="muted">Case ID</span><b>ODR-2026-024</b></div>
+              <div style="display:flex;justify-content:space-between"><span class="muted">Claimant</span><b>Priya Mehta</b></div>
+              <div style="display:flex;justify-content:space-between"><span class="muted">Respondent</span><b>Beta Industries</b></div>
+              <div style="display:flex;justify-content:space-between"><span class="muted">Type</span><b>Service Dispute</b></div>
+              <div style="display:flex;justify-content:space-between"><span class="muted">Claim Amount</span><b>₹12,00,000</b></div>
+            </div>
+          </div>
+          <div class="card card-pad" style="background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff">
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">Selected: Ms. Ananya Sharma</div>
+            <div style="font-size:12px;color:#94A3B8;margin-bottom:16px">★ 4.9 rating · Commercial & Contract specialist · 96% awards upheld</div>
+            <button class="btn btn-gold hot" style="width:100%;justify-content:center" onclick="toast('Ananya Sharma assigned to ODR-2026-024');setTimeout(()=>go('case-mgmt'),1000)">${svg(I.scale,'width="16" height="16"')} Confirm Assignment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* SCREEN 13 — AWARD GENERATION */
+reg('award','Neutral Portal',`
+<div class="portal">
+  ${sidebar('neutral','awards',neutralNav)}
+  <div class="main">
+    ${topbar('Award Generation','ODR-2026-001 · Issue the final arbitral award')}
+    <div class="content">
+      <div class="grid-2">
+        <div class="card card-pad">
+          <div class="section-head"><h2>Award Details</h2></div>
+          <div class="field"><label>Findings of the Case</label><textarea>The respondent failed to perform their contractual obligations to deliver goods as per the agreement dated 12 Jan 2026, despite receiving full advance payment from the claimant.</textarea></div>
+          <div class="field"><label>Decision / Award</label><textarea>The respondent is directed to refund ₹15,00,000 to the claimant within 30 days, along with applicable interest. The claim is allowed in part.</textarea></div>
+          <div class="grid-2b">
+            <div class="field"><label>Compensation Amount (₹)</label><input value="15,00,000"></div>
+            <div class="field"><label>Date of Award</label><input value="15 May 2026"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card card-pad" style="margin-bottom:22px">
+            <div class="section-head"><h2>Preview</h2></div>
+            <div class="legal-doc" style="font-size:12.5px;padding:24px">
+              <h3 style="font-size:17px">ARBITRAL AWARD</h3>
+              <div class="ctr">Case No. ODR-2026-001 · John Doe vs Acme Corp Ltd.</div>
+              <p>Having considered the submissions, evidence and the hearing held on 12 May 2026, the Tribunal finds that the respondent breached the contract dated 12 Jan 2026.</p>
+              <p style="margin-top:10px"><b>Award:</b> The respondent shall refund ₹15,00,000 to the claimant within 30 days.</p>
+              <div class="sig">
+                <div><div class="sig-name">Ananya Sharma</div><div style="font-size:11px;color:var(--muted)">Ms. Ananya Sharma · Arbitrator</div></div>
+                <div style="text-align:right;font-size:11px;color:var(--muted)">Digitally signed<br>15 May 2026</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="toast('Award preview opened')">${svg(I.doc,'width="15" height="15"')} Preview</button>
+            <button class="btn btn-gold hot" style="flex:1.4;justify-content:center" onclick="toast('Award issued & case ODR-2026-001 closed');setTimeout(()=>go('admin-dash'),1100)">${svg(I.award,'width="16" height="16"')} Generate &amp; Issue Award</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* SCREEN 14 — PAYMENT DASHBOARD */
+reg('payment-dash','Admin Portal',`
+<div class="portal">
+  ${sidebar('admin','pay',adminNav)}
+  <div class="main">
+    ${topbar('Payments Dashboard','Fees, invoices & refunds across the platform')}
+    <div class="content">
+      <div class="kpi-grid">
+        <div class="kpi"><div class="ic" style="background:var(--emerald-soft);color:var(--emerald)">${svg(I.card)}</div><div class="lbl">Total Revenue</div><div class="val" style="font-size:22px">₹1.25 Cr</div><span class="trend up">▲ 14% YoY</span></div>
+        <div class="kpi"><div class="ic" style="background:var(--blue-soft);color:var(--blue)">${svg(I.file)}</div><div class="lbl">Filing Fees</div><div class="val" style="font-size:23px">₹45.2L</div><span class="trend up">▲ 6%</span></div>
+        <div class="kpi"><div class="ic" style="background:#EDE9FE;color:#7C3AED">${svg(I.scale)}</div><div class="lbl">Arbitrator Fees</div><div class="val" style="font-size:23px">₹60.3L</div><span class="trend up">▲ 11%</span></div>
+        <div class="kpi"><div class="ic" style="background:var(--amber-soft);color:var(--amber)">${svg(I.grid)}</div><div class="lbl">Platform Fees</div><div class="val" style="font-size:23px">₹20.3L</div><span class="trend up">▲ 9%</span></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-pad" style="padding-bottom:0"><div class="section-head"><h2>Recent Transactions</h2><a class="link-gold">View all →</a></div></div>
+          <table>
+            <thead><tr><th>Txn ID</th><th>Case</th><th>Payer</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="cid">TXN-9001</td><td>ODR-2026-001</td><td>John Doe</td><td>Filing</td><td class="strong">₹25,000</td><td><span class="chip chip-paid"><span class="d"></span>Paid</span></td></tr>
+              <tr><td class="cid">TXN-9002</td><td>ODR-2026-024</td><td>Priya Mehta</td><td>Filing</td><td class="strong">₹18,000</td><td><span class="chip chip-paid"><span class="d"></span>Paid</span></td></tr>
+              <tr><td class="cid">TXN-9003</td><td>ODR-2026-014</td><td>Rahul Verma</td><td>Arbitrator</td><td class="strong">₹40,000</td><td><span class="chip chip-paid"><span class="d"></span>Paid</span></td></tr>
+              <tr><td class="cid">TXN-9004</td><td>ODR-2026-019</td><td>Sneha Iyer</td><td>Platform</td><td class="strong">₹8,000</td><td><span class="chip chip-pending"><span class="d"></span>Pending</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h2>Refund Requests</h2></div>
+          <div class="doc-row" style="cursor:default"><div class="fic" style="background:var(--amber)">↺</div><div style="flex:1"><div class="nm">ODR-2026-015 · ₹25,000</div><div class="sz">Requested 06 May · Filing fee</div></div><button class="btn btn-gold btn-sm" onclick="toast('Refund approved')">Approve</button></div>
+          <div class="doc-row" style="cursor:default"><div class="fic" style="background:var(--amber)">↺</div><div style="flex:1"><div class="nm">ODR-2026-011 · ₹12,000</div><div class="sz">Requested 04 May · Withdrawn</div></div><button class="btn btn-gold btn-sm" onclick="toast('Refund approved')">Approve</button></div>
+          <div style="margin-top:18px"><div class="section-head"><h2>Invoices</h2></div>
+            <div class="doc-row"><div class="fic pdf">PDF</div><div style="flex:1"><div class="nm">Invoice_ODR-2026-001.pdf</div><div class="sz">Generated 02 May</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* SCREEN 15 — ANALYTICS DASHBOARD */
+function linePath(pts,w,h){const max=Math.max(...pts),min=Math.min(...pts);const sx=w/(pts.length-1);return pts.map((p,i)=>`${i?'L':'M'}${(i*sx).toFixed(1)} ${(h-((p-min)/(max-min||1))*h*0.8-h*0.1).toFixed(1)}`).join(' ')}
+reg('analytics','Admin Portal',`
+<div class="portal">
+  ${sidebar('admin','rep',adminNav)}
+  <div class="main">
+    ${topbar('Analytics & Reports','Operational and financial insights')}
+    <div class="content">
+      <div class="grid-2b" style="margin-bottom:22px">
+        <div class="card card-pad">
+          <div class="section-head"><h2>Settlement Rate</h2><span class="chip chip-paid"><span class="d"></span>92% · ▲ 5%</span></div>
+          <svg class="linechart" viewBox="0 0 400 170" preserveAspectRatio="none">
+            <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(5,150,105,.25)"/><stop offset="1" stop-color="rgba(5,150,105,0)"/></linearGradient></defs>
+            <path d="${linePath([60,64,62,70,74,78,82,88,92],400,170)} L400 170 L0 170 Z" fill="url(#g1)"/>
+            <path d="${linePath([60,64,62,70,74,78,82,88,92],400,170)}" fill="none" stroke="#059669" stroke-width="3"/>
+          </svg>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h2>Avg. Resolution Time</h2><span class="chip chip-scheduled"><span class="d"></span>28 days · ▼ 7</span></div>
+          <svg class="linechart" viewBox="0 0 400 170" preserveAspectRatio="none">
+            <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(37,99,235,.25)"/><stop offset="1" stop-color="rgba(37,99,235,0)"/></linearGradient></defs>
+            <path d="${linePath([48,46,44,40,38,35,33,30,28],400,170)} L400 170 L0 170 Z" fill="url(#g2)"/>
+            <path d="${linePath([48,46,44,40,38,35,33,30,28],400,170)}" fill="none" stroke="#2563EB" stroke-width="3"/>
+          </svg>
+        </div>
+      </div>
+      <div class="grid-2b">
+        <div class="card card-pad">
+          <div class="section-head"><h2>Revenue Trend (This Year)</h2></div>
+          <div class="bars" style="height:180px">
+            ${[40,52,48,60,55,70,65,78,72,85,80,95].map((h,i)=>`<div class="bgrp"><div class="bcol"><div class="b" style="height:${h}%;width:10px;background:linear-gradient(180deg,var(--navy),var(--navy-3))"></div></div><div class="bl" style="font-size:9px">${['J','F','M','A','M','J','J','A','S','O','N','D'][i]}</div></div>`).join('')}
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h2>Top Dispute Categories</h2></div>
+          <div style="display:flex;align-items:center;gap:22px">
+            ${donut([{v:45,color:'#0F172A'},{v:25,color:'#D4AF37'},{v:18,color:'#2563EB'},{v:12,color:'#94A3B8'}])}
+            <div class="legend">
+              <div class="lg"><span class="sw" style="background:#0F172A"></span>Commercial<span class="v">45%</span></div>
+              <div class="lg"><span class="sw" style="background:#D4AF37"></span>Service<span class="v">25%</span></div>
+              <div class="lg"><span class="sw" style="background:#2563EB"></span>Contractual<span class="v">18%</span></div>
+              <div class="lg"><span class="sw" style="background:#94A3B8"></span>Others<span class="v">12%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* SCREEN 16 — NOTIFICATION CENTER */
+reg('notifications','Admin Portal',`
+<div class="portal">
+  ${sidebar('admin','notif',adminNav)}
+  <div class="main">
+    ${topbar('Notification Center','Email, SMS & notice delivery tracking')}
+    <div class="content">
+      <div class="card">
+        <div class="card-pad" style="padding-bottom:14px;display:flex;gap:8px;border-bottom:1px solid var(--line)">
+          ${['Email Logs','SMS Logs','Notice Status'].map((f,i)=>`<button class="btn ${i===0?'btn-navy':'btn-ghost'} btn-sm">${f}</button>`).join('')}
+        </div>
+        <table>
+          <thead><tr><th>Subject</th><th>To</th><th>Type</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">Notice of Dispute — ODR-2026-001</td><td>Acme Corp Ltd.</td><td>Email</td><td><span class="chip chip-paid"><span class="d"></span>Delivered</span></td><td class="muted">05 May</td></tr>
+            <tr><td class="strong">Hearing Scheduled — 12 May</td><td>John Doe</td><td>Email</td><td><span class="chip chip-paid"><span class="d"></span>Delivered</span></td><td class="muted">09 May</td></tr>
+            <tr><td class="strong">Hearing Reminder</td><td>All Parties</td><td>SMS</td><td><span class="chip chip-paid"><span class="d"></span>Delivered</span></td><td class="muted">11 May</td></tr>
+            <tr><td class="strong">Award Issued — ODR-2026-007</td><td>Kavya Rao</td><td>Email</td><td><span class="chip chip-paid"><span class="d"></span>Delivered</span></td><td class="muted">04 May</td></tr>
+            <tr><td class="strong">Payment Receipt</td><td>Priya Mehta</td><td>Email</td><td><span class="chip chip-pending"><span class="d"></span>Queued</span></td><td class="muted">Today</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* SCREEN 17 — DOCUMENT VAULT */
+reg('doc-vault','Claimant Portal',`
+<div class="portal">
+  ${sidebar('claimant','docs',claimantNav)}
+  <div class="main">
+    ${topbar('Document Vault','Encrypted storage for all case documents',{cta:`<button class="btn btn-gold btn-sm hot" onclick="toast('Upload dialog (demo)')">${svg(I.plus,'width="15" height="15"')} Upload</button>`})}
+    <div class="content">
+      <div class="grid-3" style="margin-bottom:22px">
+        ${[['Evidence','5 files','#2563EB'],['Awards','2 files','#7C3AED'],['Orders','3 files','#D97706'],['Settlements','1 file','#059669'],['Invoices','4 files','#0F172A'],['Correspondence','8 files','#64748B']].map(([t,n,c])=>`<div class="card card-pad" style="display:flex;align-items:center;gap:14px;cursor:pointer" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--line)'"><div style="width:44px;height:44px;border-radius:11px;background:${c};display:flex;align-items:center;justify-content:center;color:#fff">${svg(I.folder,'width="20" height="20"')}</div><div><b style="font-size:14px;color:var(--navy)">${t}</b><div style="font-size:12px;color:var(--muted)">${n}</div></div></div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-pad" style="padding-bottom:0"><div class="section-head"><h2>All Documents</h2><div class="searchbox" style="width:200px">${svg(I.search)}<span>Search files…</span></div></div></div>
+        <div class="card-pad" style="padding-top:8px">
+          <div class="doc-row"><div class="fic pdf">PDF</div><div style="flex:1"><div class="nm">Contract_Agreement.pdf</div><div class="sz">Evidence · 2.4 MB · ODR-2026-001</div></div><span class="muted" style="font-size:12px">02 May</span></div>
+          <div class="doc-row"><div class="fic pdf">PDF</div><div style="flex:1"><div class="nm">Invoice_Advance.pdf</div><div class="sz">Invoices · 880 KB · ODR-2026-001</div></div><span class="muted" style="font-size:12px">02 May</span></div>
+          <div class="doc-row"><div class="fic zip">ZIP</div><div style="flex:1"><div class="nm">Email_Correspondence.zip</div><div class="sz">Correspondence · 5.1 MB · ODR-2026-001</div></div><span class="muted" style="font-size:12px">04 May</span></div>
+          <div class="doc-row"><div class="fic doc">DOC</div><div style="flex:1"><div class="nm">Statement_of_Claim.docx</div><div class="sz">Evidence · 320 KB · ODR-2026-001</div></div><span class="muted" style="font-size:12px">02 May</span></div>
+          <div class="doc-row"><div class="fic img">IMG</div><div style="flex:1"><div class="nm">Delivery_Photos.png</div><div class="sz">Evidence · 1.8 MB · ODR-2026-001</div></div><span class="muted" style="font-size:12px">06 May</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+/* ============================================================
+   SCREEN 18 — MOBILE VIEWS (responsive frames)
+   ============================================================ */
+function phone(title,inner){
+  return `<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+    <div style="position:relative;width:260px;height:540px;background:#0F172A;border-radius:34px;padding:11px;box-shadow:0 24px 50px -12px rgba(15,23,42,.45)">
+      <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:90px;height:20px;background:#0F172A;border-radius:0 0 14px 14px;z-index:5"></div>
+      <div style="width:100%;height:100%;background:#F1F4F9;border-radius:24px;overflow:hidden;position:relative">${inner}</div>
+    </div>
+    <div style="font-weight:600;color:var(--navy);font-size:13px">${title}</div>
+  </div>`;
+}
+reg('mobile','Responsive',`
+  <div class="screen-wrap" style="background:var(--bg)">
+    ${topbar('Mobile Views','Fully responsive — the same platform on any device')}
+    <div class="content" style="display:flex;flex-wrap:wrap;gap:34px;justify-content:center;padding:40px 24px">
+      ${phone('Homepage',`
+        <div style="background:#0F172A;color:#fff;padding:16px 14px 22px">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:22px;font-size:12px;font-weight:700"><span style="color:var(--gold)">⚖</span> ODR PLATFORM</div>
+          <div style="font-family:var(--serif);font-size:21px;line-height:1.2;font-weight:600">Resolve Disputes Online. Fast. Secure.</div>
+          <div style="margin-top:14px;background:var(--gold);color:#0F172A;text-align:center;padding:9px;border-radius:9px;font-weight:700;font-size:12px">File a Dispute</div>
+        </div>
+        <div style="display:flex;justify-content:space-around;padding:14px 8px;background:#fff;font-size:11px;text-align:center">
+          <div><b style="color:var(--navy);font-size:15px;display:block">2,548+</b>Resolved</div>
+          <div><b style="color:var(--navy);font-size:15px;display:block">92%</b>Success</div>
+          <div><b style="color:var(--navy);font-size:15px;display:block">28d</b>Avg.</div>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px">Our Services</div>
+          ${['Negotiation','Mediation','Conciliation','Arbitration'].map(s=>`<div style="background:#fff;border-radius:9px;padding:9px 11px;margin-bottom:7px;font-size:12px;color:var(--ink);display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;background:var(--gold);border-radius:2px"></span>${s}</div>`).join('')}
+        </div>
+      `)}
+      ${phone('Dashboard',`
+        <div style="background:#fff;padding:13px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">Hi, John 👋</div>
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#0F172A,#334155)"></div>
+        </div>
+        <div style="padding:13px 14px;display:grid;grid-template-columns:1fr 1fr;gap:9px">
+          ${[['Active','3','#2563EB'],['Closed','7','#059669'],['Hearings','2','#D97706'],['Paid','₹48.5K','#0F172A']].map(([l,v,c])=>`<div style="background:#fff;border-radius:11px;padding:11px"><div style="width:26px;height:26px;border-radius:7px;background:${c};margin-bottom:7px"></div><b style="font-size:16px;color:var(--navy);display:block">${v}</b><span style="font-size:11px;color:var(--muted)">${l}</span></div>`).join('')}
+        </div>
+        <div style="padding:0 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px">Recent Cases</div>
+          ${[['ODR-2026-001','In Progress','#2563EB'],['ODR-2026-002','Hearing','#D97706']].map(([id,s,c])=>`<div style="background:#fff;border-radius:9px;padding:10px 11px;margin-bottom:7px"><b style="font-size:12px;color:var(--navy);display:block">${id}</b><span style="font-size:10px;color:${c};font-weight:600">● ${s}</span></div>`).join('')}
+        </div>
+      `)}
+      ${phone('Case Details',`
+        <div style="background:#0F172A;color:#fff;padding:14px">
+          <div style="font-size:11px;opacity:.7">CASE</div>
+          <div style="font-size:15px;font-weight:700">ODR-2026-001</div>
+          <span style="display:inline-block;margin-top:7px;background:rgba(212,175,55,.2);color:var(--gold);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px">IN PROGRESS</span>
+        </div>
+        <div style="padding:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:11px">Case Timeline</div>
+          ${[['Dispute Filed','done'],['Accepted','done'],['Neutral Assigned','done'],['Hearing Scheduled','active'],['Award Issued','']].map(([t,st])=>`<div style="display:flex;align-items:center;gap:9px;margin-bottom:11px"><div style="width:16px;height:16px;border-radius:50%;background:${st==='done'?'#059669':st==='active'?'var(--gold)':'#CBD5E1'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px">${st==='done'?'✓':''}</div><span style="font-size:11px;color:${st?'var(--ink)':'var(--muted)'};font-weight:${st==='active'?'700':'400'}">${t}</span></div>`).join('')}
+        </div>
+      `)}
+      ${phone('Hearing Room',`
+        <div style="background:#0B1120;height:100%;position:relative;display:flex;flex-direction:column">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;color:#fff;font-size:10px"><span style="color:var(--gold)">● Recording</span><span>01:30:36</span></div>
+          <div style="flex:1;display:grid;grid-template-rows:1fr 1fr;gap:6px;padding:0 8px">
+            <div style="background:linear-gradient(135deg,#1e293b,#0f172a);border-radius:9px;position:relative"><span style="position:absolute;bottom:6px;left:7px;color:#fff;font-size:9px">John Doe</span></div>
+            <div style="background:linear-gradient(135deg,#334155,#1e293b);border-radius:9px;position:relative"><span style="position:absolute;bottom:6px;left:7px;color:#fff;font-size:9px">Acme Corp Ltd.</span></div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:13px;padding:14px 0">
+            ${['🎤','📹','🖥️'].map(e=>`<div style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:14px">${e}</div>`).join('')}
+            <div style="width:34px;height:34px;border-radius:50%;background:#DC2626;display:flex;align-items:center;justify-content:center;font-size:14px">📞</div>
+          </div>
+        </div>
+      `)}
+    </div>
+  </div>
+`);
+
+/* ============================================================
+   NAVIGATION ENGINE
+   ============================================================ */
+const crumbMap = {
+  'home':'Public Website',
+  'login':'Authentication',
+  'claimant-dash':'Claimant ▸ Dashboard',
+  'file-dispute':'Claimant ▸ File a Dispute',
+  'claimant-case':'Claimant ▸ Case Details',
+  'doc-vault':'Claimant ▸ Document Vault',
+  'respondent-dash':'Respondent ▸ Dashboard',
+  'neutral-dash':'Neutral ▸ Dashboard',
+  'hearing-scheduler':'Neutral ▸ Schedule Hearing',
+  'hearing-room':'Live Hearing Room',
+  'mediation-room':'Private Mediation Room',
+  'award':'Neutral ▸ Award Generation',
+  'admin-dash':'Admin ▸ Dashboard',
+  'case-mgmt':'Admin ▸ Case Management',
+  'assign-neutral':'Admin ▸ Assign Neutral',
+  'payment-dash':'Admin ▸ Payments',
+  'analytics':'Admin ▸ Analytics',
+  'notifications':'Admin ▸ Notifications',
+  'mobile':'Responsive Views'
+};
+
+let current = null;
+let hrTimer = null;
+
+function go(id){
+  if(!screens[id]){ console.warn('Unknown screen:',id); return; }
+  // lazy-build the screen div on first visit
+  let el = document.getElementById('scr-'+id);
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'scr-'+id;
+    el.className = 'screen';
+    el.innerHTML = screens[id].html;
+    stage.appendChild(el);
+  }
+  // deactivate previous
+  if(current){
+    const prev = document.getElementById('scr-'+current);
+    if(prev) prev.classList.remove('active');
+  }
+  el.classList.add('active');
+  current = id;
+  // breadcrumb
+  crumbs.innerHTML = '<b>'+(crumbMap[id]||screens[id].label)+'</b>';
+  // scroll resets
+  window.scrollTo(0,0);
+  const sc = el.querySelector('.content'); if(sc) sc.scrollTop = 0;
+  // live hearing timer
+  if(hrTimer){ clearInterval(hrTimer); hrTimer = null; }
+  if(id==='hearing-room') startTimer();
+}
+
+function startTimer(){
+  const t = document.querySelector('#scr-hearing-room #hr-timer');
+  if(!t) return;
+  let parts = (t.textContent||'01:30:36').split(':').map(Number);
+  let secs = parts[0]*3600 + parts[1]*60 + parts[2];
+  hrTimer = setInterval(()=>{
+    secs++;
+    const h = String(Math.floor(secs/3600)).padStart(2,'0');
+    const m = String(Math.floor((secs%3600)/60)).padStart(2,'0');
+    const s = String(secs%60).padStart(2,'0');
+    const el = document.querySelector('#scr-hearing-room #hr-timer');
+    if(el) el.textContent = h+':'+m+':'+s; else { clearInterval(hrTimer); hrTimer=null; }
+  },1000);
+}
+
+let toastTimer = null;
+function toast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg || 'Done';
+  t.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* boot */
+go('home');
+
+</script>
+</body>
+</html>
