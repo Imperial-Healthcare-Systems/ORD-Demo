@@ -57,51 +57,53 @@ export default function NeutralDashPage() {
                   <h2>Assigned Cases</h2>
                 </div>
               </div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Case ID</th>
-                    <th>Parties</th>
-                    <th>Status</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr onClick={() => go('hearing-scheduler')}>
-                    <td className="cid">ODR-2026-001</td>
-                    <td>John Doe vs Acme Corp Ltd.</td>
-                    <td>
-                      <span className="chip chip-scheduled">
-                        <span className="d" />
-                        Hearing Scheduled
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>→</td>
-                  </tr>
-                  <tr onClick={() => go('hearing-scheduler')}>
-                    <td className="cid">ODR-2026-014</td>
-                    <td>Rahul V. vs Gamma Pvt. Ltd.</td>
-                    <td>
-                      <span className="chip chip-evidence">
-                        <span className="d" />
-                        Evidence Stage
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>→</td>
-                  </tr>
-                  <tr onClick={() => go('award')}>
-                    <td className="cid">ODR-2026-019</td>
-                    <td>Sneha I. vs Delta Solutions</td>
-                    <td>
-                      <span className="chip chip-progress">
-                        <span className="d" />
-                        Award Due
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>→</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Case ID</th>
+                      <th>Parties</th>
+                      <th>Status</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr onClick={() => go('hearing-scheduler')}>
+                      <td className="cid">ODR-2026-001</td>
+                      <td>John Doe vs Acme Corp Ltd.</td>
+                      <td>
+                        <span className="chip chip-scheduled">
+                          <span className="d" />
+                          Hearing Scheduled
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>→</td>
+                    </tr>
+                    <tr onClick={() => go('hearing-scheduler')}>
+                      <td className="cid">ODR-2026-014</td>
+                      <td>Rahul V. vs Gamma Pvt. Ltd.</td>
+                      <td>
+                        <span className="chip chip-evidence">
+                          <span className="d" />
+                          Evidence Stage
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>→</td>
+                    </tr>
+                    <tr onClick={() => go('award')}>
+                      <td className="cid">ODR-2026-019</td>
+                      <td>Sneha I. vs Delta Solutions</td>
+                      <td>
+                        <span className="chip chip-progress">
+                          <span className="d" />
+                          Award Due
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>→</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <div className="card card-pad">
               <div className="section-head">

@@ -2,6 +2,7 @@
 import Icon from '@/components/Icon';
 import Sidebar from '@/components/Sidebar';
 import Topbar from '@/components/Topbar';
+import CountUp from '@/components/CountUp';
 import { useGo } from '@/lib/useGo';
 import { claimantNav } from '@/lib/nav';
 
@@ -22,37 +23,37 @@ export default function ClaimantDashPage() {
         />
         <div className="content">
           <div className="kpi-grid">
-            <div className="kpi">
+            <div className="kpi reveal">
               <div className="ic" style={{ background: 'var(--amber-soft)', color: 'var(--amber)' }}>
                 <Icon name="folder" />
               </div>
               <div className="lbl">Active Cases</div>
-              <div className="val">3</div>
+              <div className="val"><CountUp value={3} /></div>
               <span className="trend up">▲ 1 this month</span>
             </div>
-            <div className="kpi">
+            <div className="kpi reveal">
               <div className="ic" style={{ background: 'var(--emerald-soft)', color: 'var(--emerald)' }}>
                 <Icon name="check" />
               </div>
               <div className="lbl">Closed Cases</div>
-              <div className="val">7</div>
+              <div className="val"><CountUp value={7} /></div>
               <span className="trend up">▲ 92% settled</span>
             </div>
-            <div className="kpi">
+            <div className="kpi reveal">
               <div className="ic" style={{ background: 'var(--blue-soft)', color: 'var(--blue)' }}>
                 <Icon name="calendar" />
               </div>
               <div className="lbl">Upcoming Hearings</div>
-              <div className="val">2</div>
+              <div className="val"><CountUp value={2} /></div>
               <span className="trend flat">Next in 4 days</span>
             </div>
-            <div className="kpi">
+            <div className="kpi reveal">
               <div className="ic" style={{ background: '#EDE9FE', color: '#7C3AED' }}>
                 <Icon name="card" />
               </div>
               <div className="lbl">Payments Made</div>
               <div className="val" style={{ fontSize: 24 }}>
-                ₹48,500
+                <CountUp value={48500} prefix="₹" />
               </div>
               <span className="trend flat">Across 10 cases</span>
             </div>
@@ -68,6 +69,7 @@ export default function ClaimantDashPage() {
                   </a>
                 </div>
               </div>
+              <div className="table-scroll">
               <table>
                 <thead>
                   <tr>
@@ -129,6 +131,7 @@ export default function ClaimantDashPage() {
                   </tr>
                 </tbody>
               </table>
+              </div>
             </div>
 
             <div className="card card-pad">

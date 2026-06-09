@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Fraunces } from 'next/font/google';
 import './globals.css';
 import Chrome from '@/components/Chrome';
 import ToastProvider from '@/components/ToastProvider';
+import NavProvider from '@/components/NavProvider';
 
 const sans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -30,10 +31,12 @@ export default function RootLayout({
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body>
         <ToastProvider>
-          <div className="app">
-            <Chrome />
-            <div className="stage">{children}</div>
-          </div>
+          <NavProvider>
+            <div className="app">
+              <Chrome />
+              <div className="stage">{children}</div>
+            </div>
+          </NavProvider>
         </ToastProvider>
       </body>
     </html>

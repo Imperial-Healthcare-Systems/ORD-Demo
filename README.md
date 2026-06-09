@@ -47,3 +47,26 @@ The original demo navigated by screen id via `go(id)`. Here each screen is a rou
 chrome bar are derived from the current pathname.
 
 The original single-file demo is kept at `ODR-Platform-Demo.html` for reference.
+
+## Interactivity & state
+
+- `lib/data.ts` holds an in-memory `DB` singleton (cases, notifications, documents, the
+  file-dispute draft) that persists across client-side navigation, plus helpers
+  (`nextCaseId`, `feeCalc`, `useRerender`). A filed dispute shows up in admin case
+  management and notifications.
+- The **file-dispute** wizard is a 6-step stateful flow with validation and a live fee
+  calc. **Case management**, **document vault**, and **notifications** have working
+  search / filters / tabs. The **hearing room** has a live timer, send-able chat with
+  auto-incoming messages, and mic/camera/share toggles. The **admin dashboard** has a
+  live activity ticker; dashboards animate KPI count-ups (`components/CountUp.tsx`).
+- The sidebar is off-canvas on mobile (hamburger in the topbar), via
+  `components/NavProvider.tsx`.
+
+## Brand images (optional)
+
+The homepage hero (Lady Justice) and the logo mark fall back to a gradient + gold ⚖ glyph
+until the real images are present. To use the embedded assets from the single-file demo:
+
+1. Save your updated single-file demo over `ODR-Platform-Demo.html` in the project root.
+2. Run `node scripts/extract-assets.mjs` — it writes `public/mark.png` and `public/hero.jpg`
+   (and `public/logo.png` if present), which the app picks up automatically.

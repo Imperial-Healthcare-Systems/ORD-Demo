@@ -66,72 +66,74 @@ export default function PaymentDashPage() {
                   <a className="link-gold">View all →</a>
                 </div>
               </div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Txn ID</th>
-                    <th>Case</th>
-                    <th>Payer</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="cid">TXN-9001</td>
-                    <td>ODR-2026-001</td>
-                    <td>John Doe</td>
-                    <td>Filing</td>
-                    <td className="strong">₹25,000</td>
-                    <td>
-                      <span className="chip chip-paid">
-                        <span className="d" />
-                        Paid
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="cid">TXN-9002</td>
-                    <td>ODR-2026-024</td>
-                    <td>Priya Mehta</td>
-                    <td>Filing</td>
-                    <td className="strong">₹18,000</td>
-                    <td>
-                      <span className="chip chip-paid">
-                        <span className="d" />
-                        Paid
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="cid">TXN-9003</td>
-                    <td>ODR-2026-014</td>
-                    <td>Rahul Verma</td>
-                    <td>Arbitrator</td>
-                    <td className="strong">₹40,000</td>
-                    <td>
-                      <span className="chip chip-paid">
-                        <span className="d" />
-                        Paid
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="cid">TXN-9004</td>
-                    <td>ODR-2026-019</td>
-                    <td>Sneha Iyer</td>
-                    <td>Platform</td>
-                    <td className="strong">₹8,000</td>
-                    <td>
-                      <span className="chip chip-pending">
-                        <span className="d" />
-                        Pending
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Txn ID</th>
+                      <th>Case</th>
+                      <th>Payer</th>
+                      <th>Type</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="cid">TXN-9001</td>
+                      <td>ODR-2026-001</td>
+                      <td>John Doe</td>
+                      <td>Filing</td>
+                      <td className="strong">₹25,000</td>
+                      <td>
+                        <span className="chip chip-paid">
+                          <span className="d" />
+                          Paid
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="cid">TXN-9002</td>
+                      <td>ODR-2026-024</td>
+                      <td>Priya Mehta</td>
+                      <td>Filing</td>
+                      <td className="strong">₹18,000</td>
+                      <td>
+                        <span className="chip chip-paid">
+                          <span className="d" />
+                          Paid
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="cid">TXN-9003</td>
+                      <td>ODR-2026-014</td>
+                      <td>Rahul Verma</td>
+                      <td>Arbitrator</td>
+                      <td className="strong">₹40,000</td>
+                      <td>
+                        <span className="chip chip-paid">
+                          <span className="d" />
+                          Paid
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="cid">TXN-9004</td>
+                      <td>ODR-2026-019</td>
+                      <td>Sneha Iyer</td>
+                      <td>Platform</td>
+                      <td className="strong">₹8,000</td>
+                      <td>
+                        <span className="chip chip-pending">
+                          <span className="d" />
+                          Pending
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <div className="card card-pad">
               <div className="section-head">

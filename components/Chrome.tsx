@@ -2,6 +2,7 @@
 import { usePathname } from 'next/navigation';
 import { useGo } from '@/lib/useGo';
 import { crumbForPath } from '@/lib/routes';
+import BrandMark from './BrandMark';
 
 export default function Chrome() {
   const pathname = usePathname();
@@ -9,7 +10,7 @@ export default function Chrome() {
   return (
     <div className="chrome">
       <div className="brand">
-        <div className="mark">⚖</div>
+        <BrandMark size={28} radius={6} />
         <div>
           ODR Platform <small>by Imperial Tech Innovations</small>
         </div>

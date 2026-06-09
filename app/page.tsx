@@ -1,6 +1,8 @@
 'use client';
-import Icon from '@/components/Icon';
 import { useGo } from '@/lib/useGo';
+import BrandMark from '@/components/BrandMark';
+import HeroArt from '@/components/HeroArt';
+import CountUp from '@/components/CountUp';
 
 export default function HomePage() {
   const go = useGo();
@@ -8,9 +10,9 @@ export default function HomePage() {
     <div className="pub">
       <nav className="pub-nav">
         <div className="lg">
-          <div className="mark">⚖</div>
+          <BrandMark size={42} />
           <div>
-            ODR Platform<small>RESOLVE • ONLINE</small>
+            ODR Platform<small>BY IMPERIAL TECH INNOVATIONS</small>
           </div>
         </div>
         <div className="links">
@@ -31,33 +33,25 @@ export default function HomePage() {
       </nav>
 
       <section className="hero">
-        <div>
-          <span className="eyebrow">⚖ Trusted Online Dispute Resolution</span>
-          <h1>
-            Resolve Disputes
+        <div className="hero-text">
+          <div className="hero-eyebrow">RESOLVING DISPUTES.</div>
+          <h1 className="hero-title">
+            RESTORING
             <br />
-            <em>Online.</em> Fast.
-            <br />
-            Secure. Transparent.
+            <span className="gold">JUSTICE.</span>
           </h1>
-          <p>
-            Our ODR platform helps individuals and businesses resolve disputes
-            end-to-end through negotiation, mediation, conciliation and
-            arbitration — without ever stepping into a courtroom.
+          <div className="hero-rule" />
+          <p className="hero-sub">
+            A seamless Online Dispute Resolution platform
+            <br />
+            for faster, fairer and effective justice.
           </p>
-          <div className="cta">
-            <a className="btn btn-gold hot" onClick={() => go('login')}>
-              <Icon name="file" width={17} height={17} /> File a Dispute
-            </a>
-            <a className="btn btn-ghost" onClick={() => go('login')}>
-              Become a Neutral
-            </a>
-          </div>
+          <a className="hero-btn" onClick={() => go('login')}>
+            START A CASE <span className="arr">→</span>
+          </a>
         </div>
-        <div className="hero-art">
-          <div className="glow" />
-          <div className="glow2" />
-          <div className="scales">⚖️</div>
+        <div className="hero-visual">
+          <HeroArt />
           <div className="float-card fc1">
             <div className="ic" style={{ background: 'var(--emerald-soft)' }}>
               ✅
@@ -80,31 +74,39 @@ export default function HomePage() {
       </section>
 
       <div className="stats-strip">
-        <div className="st">
+        <div className="st reveal">
           <div className="ic">⚖️</div>
           <div>
-            <div className="v">2,548+</div>
+            <div className="v">
+              <CountUp value={2548} suffix="+" />
+            </div>
             <div className="l">Cases Resolved</div>
           </div>
         </div>
-        <div className="st">
+        <div className="st reveal">
           <div className="ic">📈</div>
           <div>
-            <div className="v">92%</div>
+            <div className="v">
+              <CountUp value={92} suffix="%" />
+            </div>
             <div className="l">Settlement Rate</div>
           </div>
         </div>
-        <div className="st">
+        <div className="st reveal">
           <div className="ic">⏱️</div>
           <div>
-            <div className="v">28 Days</div>
+            <div className="v">
+              <CountUp value={28} suffix=" Days" />
+            </div>
             <div className="l">Avg. Resolution</div>
           </div>
         </div>
-        <div className="st">
+        <div className="st reveal">
           <div className="ic">👥</div>
           <div>
-            <div className="v">150+</div>
+            <div className="v">
+              <CountUp value={150} suffix="+" />
+            </div>
             <div className="l">Expert Neutrals</div>
           </div>
         </div>
@@ -191,14 +193,61 @@ export default function HomePage() {
       </section>
 
       <footer className="pub-foot">
-        <div className="lg">
-          <div className="mark">⚖</div>ODR Platform
+        <div className="foot-top">
+          <div className="foot-brand">
+            <div className="fb-row">
+              <BrandMark size={44} />
+              <div className="fb-name">
+                ODR Platform<small>BY IMPERIAL TECH INNOVATIONS</small>
+              </div>
+            </div>
+            <p>
+              A seamless Online Dispute Resolution platform for faster, fairer
+              and effective justice — secure, transparent and accessible from
+              anywhere.
+            </p>
+            <div className="fb-badges">
+              <span>🔐 ISO 27001</span>
+              <span>⚖ Arbitration &amp; Conciliation Act</span>
+              <span>🇮🇳 Made in India</span>
+            </div>
+          </div>
+          <div className="foot-cols">
+            <div className="fcol">
+              <h5>Platform</h5>
+              <a onClick={() => go('login')}>File a Dispute</a>
+              <a onClick={() => go('login')}>Track a Case</a>
+              <a onClick={() => go('login')}>Become a Neutral</a>
+              <a onClick={() => go('login')}>Pricing</a>
+            </div>
+            <div className="fcol">
+              <h5>Resolve</h5>
+              <a>Negotiation</a>
+              <a>Mediation</a>
+              <a>Conciliation</a>
+              <a>Arbitration</a>
+            </div>
+            <div className="fcol">
+              <h5>Company</h5>
+              <a>About Us</a>
+              <a>Panel of Neutrals</a>
+              <a>Contact</a>
+              <a>Careers</a>
+            </div>
+            <div className="fcol">
+              <h5>Legal</h5>
+              <a>Terms of Use</a>
+              <a>Privacy Policy</a>
+              <a>Grievance Redressal</a>
+            </div>
+          </div>
         </div>
-        <div className="spacer" />
-        <span>
-          © 2026 Imperial Tech Innovations · Confidential Demo · Built for Mr.
-          Rudvik Reddy
-        </span>
+        <div className="foot-bot">
+          <span>© 2026 Imperial Tech Innovations™ · All rights reserved.</span>
+          <span className="foot-conf">
+            Confidential Demo · Prepared for Mr. Rudvik Reddy
+          </span>
+        </div>
       </footer>
     </div>
   );

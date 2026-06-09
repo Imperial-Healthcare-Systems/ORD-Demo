@@ -123,40 +123,42 @@ export default function RespondentDashPage() {
                   <h2>My Disputes</h2>
                 </div>
               </div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Case ID</th>
-                    <th>Claimant</th>
-                    <th>Status</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr onClick={() => go('claimant-case')}>
-                    <td className="cid">ODR-2026-001</td>
-                    <td>John Doe</td>
-                    <td>
-                      <span className="chip chip-progress">
-                        <span className="d" />
-                        Response Pending
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>→</td>
-                  </tr>
-                  <tr onClick={() => go('claimant-case')}>
-                    <td className="cid">ODR-2025-097</td>
-                    <td>Sigma LLP</td>
-                    <td>
-                      <span className="chip chip-closed">
-                        <span className="d" />
-                        Settled
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>→</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Case ID</th>
+                      <th>Claimant</th>
+                      <th>Status</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr onClick={() => go('claimant-case')}>
+                      <td className="cid">ODR-2026-001</td>
+                      <td>John Doe</td>
+                      <td>
+                        <span className="chip chip-progress">
+                          <span className="d" />
+                          Response Pending
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>→</td>
+                    </tr>
+                    <tr onClick={() => go('claimant-case')}>
+                      <td className="cid">ODR-2025-097</td>
+                      <td>Sigma LLP</td>
+                      <td>
+                        <span className="chip chip-closed">
+                          <span className="d" />
+                          Settled
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>→</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <div className="card card-pad">
               <div className="section-head">
